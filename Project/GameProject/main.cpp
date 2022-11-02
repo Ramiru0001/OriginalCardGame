@@ -1,5 +1,7 @@
 #include <GLLibrary.h>
 #include "Task/TaskManager.h"
+#include "Base/Base.h"
+#include "Card/BaseCard.h"
 #define SCREEN_WIDTH 1920
 #define SCREEN_HEIGHT 1080
 
@@ -87,9 +89,10 @@ void Init(void)
 	//-----------------------------------------------------
 
 	//Base::Add(new Title());
+	ADD_RESOURCE("Trump", CImage::CreateImage("Image/TrumpCard.png"));
+	ADD_RESOURCE("TrumpBehind", CImage::CreateImage("Image/TrumpCardBehind.png"));
+	Base::Add(new BaseCard());
 }
-
-
 void Release()
 {
 	CLoadThread::ClearInstance();
