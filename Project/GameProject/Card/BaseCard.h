@@ -27,7 +27,10 @@ public:
 	std::list<int> Reserve_list4;//場札。左から5番目
 	std::list<int> Reserve_list5;//場札。左から6番目
 	std::list<int> Reserve_list6;//場札。左から7番目,1番右
-	std::list<int> Foundation_list;//左上の組札
+	std::list<int> Foundation_list0;//左上の組札。1番左
+	std::list<int> Foundation_list1;//左上の組札。左から2番め
+	std::list<int> Foundation_list2;//左上の組札。左から3番目
+	std::list<int> Foundation_list3;//左上の組札。左から4番目
 	CImage heart[14];//赤
 	CImage diamond[14];//赤
 	CImage club[14];//黒
