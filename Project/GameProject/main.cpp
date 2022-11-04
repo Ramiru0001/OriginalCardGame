@@ -2,8 +2,8 @@
 #include "Task/TaskManager.h"
 #include "Base/Base.h"
 #include "Card/BaseCard.h"
-#define SCREEN_WIDTH 1920
-#define SCREEN_HEIGHT 1080
+#define SCREEN_WIDTH 1280
+#define SCREEN_HEIGHT 720
 
 
 
@@ -15,14 +15,16 @@
 
 void MainLoop(void) {
 	// タスクマネージャー更新処理
-	TaskManager::Instance()->Update();
+	//TaskManager::Instance()->Update();
 	// タスクマネージャー描画処理
-	TaskManager::Instance()->Draw();
+	//TaskManager::Instance()->Draw();
+	Base::UpdateAll();
+	Base::DrawAll();
 }
 
 void Init(void)
 {
-	glClearColor(1.0, 1.0, 1.0, 1.0);
+	glClearColor(0.26, 0.49, 0.29, 1.0);
 
 	glEnable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -89,7 +91,7 @@ void Init(void)
 	//-----------------------------------------------------
 
 	//Base::Add(new Title());
-	ADD_RESOURCE("Trump", CImage::CreateImage("Image/TrumpCard.png"));
+	ADD_RESOURCE("TrumpCard", CImage::CreateImage("Image/TrumpCard.png"));
 	ADD_RESOURCE("TrumpBehind", CImage::CreateImage("Image/TrumpCardBehind.png"));
 	Base::Add(new BaseCard());
 }

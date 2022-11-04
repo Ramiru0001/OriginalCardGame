@@ -8,12 +8,6 @@
     <ClCompile Include="Card\BaseCard.cpp">
       <Filter>Card</Filter>
     </ClCompile>
-    <ClCompile Include="Task\Task.cpp">
-      <Filter>Task</Filter>
-    </ClCompile>
-    <ClCompile Include="Task\TaskManager.cpp">
-      <Filter>Task</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Game">
@@ -28,9 +22,6 @@
     <Filter Include="Card">
       <UniqueIdentifier>{fe314d3d-143a-4946-9489-69ec95e395b1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Task">
-      <UniqueIdentifier>{58bc6eed-0248-4948-9280-135a4f583a34}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base\Base.h">
@@ -38,12 +29,6 @@
     </ClInclude>
     <ClInclude Include="Card\BaseCard.h">
       <Filter>Card</Filter>
-    </ClInclude>
-    <ClInclude Include="Task\Task.h">
-      <Filter>Task</Filter>
-    </ClInclude>
-    <ClInclude Include="Task\TaskManager.h">
-      <Filter>Task</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
