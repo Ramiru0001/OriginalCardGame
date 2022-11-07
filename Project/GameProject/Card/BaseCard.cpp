@@ -15,14 +15,30 @@ BaseCard::BaseCard():Base(eType_Card){
 BaseCard::~BaseCard() {
 }
 void BaseCard::Update() {
+	MousePos = CInput::GetMousePoint();
+	//動かせるカードの上にマウスがあるかどうか
+	//ある場合,	MouseOverCard=trueにする、ListNumを更新する。
+	InsideOrOutsideTheCard();
 	//リスト操作
 	//ReserveOpenリストの、一番最後の画像のうえでマウスの左クリックを押してドラッグして離したとき
 		//一番近くのカードの上に載せられるかを判定して、無理だったら戻し、可能ならそのままにする。
 
 	//まず、押したときにどれかのカードの範囲内かどうかをさがす。
 	//範囲内だったら、リスト名を返す
-	InsideOrOutsideTheCard();
+	//押してるときに、その中に入ってたら、カードをマウスの中央に動かす
+	//ここで、カードの座標を変数に入れておいて、Drawの方でそれを指定する。
+
+	if (MouseOverCard && PUSH(CInput::eMouseL)) {
+		//ListNumを使って、そのカードの座標を変更。
+		MovingLane = ListNum;
+		CardMoving = true;
+	}
+	if (FREE(CInput::eMouseL)) {
+		CardMoving = false;
+	}
+	BothStockAndWaste();
 }
+
 void BaseCard::ImageSet() {
 	//画像のコピー、切り取り、サイズ設定、名前設定。
 	for (int i = 0; i<13; i++) {
@@ -47,49 +63,10 @@ void BaseCard::ImageSet() {
 	BehindCard.SetSize(SCREEN_WIDTH * 250 / 1920, SCREEN_HEIGHT * 375 / 1080);
 }
 void BaseCard::Draw() {
-	//Foundation_list
-	/*heart[0].SetSize(SCREEN_WIDTH * 200 / 1920, SCREEN_HEIGHT * 300 / 1080);
-	heart[0].SetPos(SCREEN_WIDTH * 0 / 1920, SCREEN_HEIGHT * 0 / 1080);
-	heart[0].Draw(); 
-	diamond[0].SetSize(SCREEN_WIDTH * 200 / 1920, SCREEN_HEIGHT * 300 / 1080);
-	diamond[0].SetPos(SCREEN_WIDTH * 210 / 1920, SCREEN_HEIGHT * 0 / 1080);
-	diamond[0].Draw();
-	club[0].SetSize(SCREEN_WIDTH * 200 / 1920, SCREEN_HEIGHT * 300 / 1080);
-	club[0].SetPos(SCREEN_WIDTH * 420 / 1920, SCREEN_HEIGHT * 0 / 1080);
-	club[0].Draw();
-	spade[0].SetSize(SCREEN_WIDTH * 200 / 1920, SCREEN_HEIGHT * 300 / 1080);
-	spade[0].SetPos(SCREEN_WIDTH * 630 / 1920, SCREEN_HEIGHT * 0 / 1080);
-	spade[0].Draw();*/
-	//Stock_list
-	/*BehindCard.SetSize(SCREEN_WIDTH * 200 / 1920, SCREEN_HEIGHT * 300 / 1080);
-	BehindCard.SetPos(SCREEN_WIDTH * 1710 / 1920, SCREEN_HEIGHT * 0 / 1080);
-	BehindCard.Draw();*/
-	//Waste_list
-	/*heart[0].SetSize(SCREEN_WIDTH * 200 / 1920, SCREEN_HEIGHT * 300 / 1080);
-	heart[0].SetPos(SCREEN_WIDTH * 1500 / 1920, SCREEN_HEIGHT * 0 / 1080);
-	heart[0].Draw();*/
-	//Reserve_list
-	/*heart[0].SetSize(SCREEN_WIDTH * 250 / 1920, SCREEN_HEIGHT * 375 / 1080);
-	heart[0].SetPos(SCREEN_WIDTH * (25 + (250 + 20) * 0) / 1920, SCREEN_HEIGHT * 350 / 1080);
-	heart[0].Draw();*/ 
-	/*heart[0].SetPos(SCREEN_WIDTH * (25 + (250 + 20) * 1) / 1920, SCREEN_HEIGHT * 350 / 1080);
-	heart[0].Draw(); 
-	heart[0].SetPos(SCREEN_WIDTH * (25 + (250 + 20) * 2) / 1920, SCREEN_HEIGHT * 350 / 1080);
-	heart[0].Draw(); 
-	heart[0].SetPos(SCREEN_WIDTH * (25 + (250 + 20) * 3) / 1920, SCREEN_HEIGHT * 350 / 1080);
-	heart[0].Draw(); 
-	heart[0].SetPos(SCREEN_WIDTH * (25 + (250 + 20) * 4) / 1920, SCREEN_HEIGHT * 350 / 1080);
-	heart[0].Draw(); 
-	heart[0].SetPos(SCREEN_WIDTH * (25 + (250 + 20) * 5) / 1920, SCREEN_HEIGHT * 350 / 1080);
-	heart[0].Draw();
-	BehindCard.SetSize(SCREEN_WIDTH * 250 / 1920, SCREEN_HEIGHT * 375 / 1080);
-	BehindCard.SetPos(SCREEN_WIDTH * (25 + (250 + 20) * 6) / 1920, SCREEN_HEIGHT * 350 / 1080);
-	BehindCard.Draw();
-	heart[0].SetPos(SCREEN_WIDTH * (25 + (250 + 20) * 6) / 1920, SCREEN_HEIGHT * 380 / 1080);
-	heart[0].Draw();*/
-
 	//リストを読み込んで、そのリストの数字の画像を表示させる
+	//MouseOverCardがtrueならマウスのところにカードを指定
 	LoadTheListAndDraw();
+	MovingCardDraw();
 }
 void BaseCard::CardListSet() {
 	//std::cout << Remaining_list.size() << std::endl;
@@ -212,13 +189,13 @@ void BaseCard::CardNumToImage(int ThatCardNumber) {
 		m_img = heart[ThatCardNumber];
 	}
 	else if (ThatCardNumber < 26) {
-		m_img = diamond[ThatCardNumber - 12];
+		m_img = diamond[ThatCardNumber - 13];
 	}
 	else if (ThatCardNumber < 39) {
-		m_img = club[ThatCardNumber - 25];
+		m_img = club[ThatCardNumber - 26];
 	}
 	else{
-		m_img = spade[ThatCardNumber - 38];
+		m_img = spade[ThatCardNumber - 39];
 	}
 }
 void BaseCard::LoadTheListAndDraw() {
@@ -242,8 +219,10 @@ void BaseCard::LoadTheListAndDraw() {
 	while (ListCount < Reserve_listOpen0.size()) {
 		CardNumToImage(*Itr);
 		m_img.SetSize(SCREEN_WIDTH * 250 / 1920, SCREEN_HEIGHT * 375 / 1080);
-		m_img.SetPos(SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920, SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080);
-		m_img.Draw();
+		if (MovingLane != eNum_ReserveOpen0 || !CardMoving) {
+			m_img.SetPos(SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920, SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080);
+			m_img.Draw();
+		}
 		LineNum++;
 		ListCount++;
 	}
@@ -264,8 +243,10 @@ void BaseCard::LoadTheListAndDraw() {
 	while (ListCount < Reserve_listOpen1.size()) {
 		CardNumToImage(*Itr);
 		m_img.SetSize(SCREEN_WIDTH * 250 / 1920, SCREEN_HEIGHT * 375 / 1080);
-		m_img.SetPos(SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920, SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080);
-		m_img.Draw();
+		if (MovingLane != eNum_ReserveOpen1 || !CardMoving){
+			m_img.SetPos(SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920, SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080);
+			m_img.Draw();
+		}
 		LineNum++;
 		ListCount++;
 	}
@@ -286,8 +267,10 @@ void BaseCard::LoadTheListAndDraw() {
 	while (ListCount < Reserve_listOpen2.size()) {
 		CardNumToImage(*Itr);
 		m_img.SetSize(SCREEN_WIDTH * 250 / 1920, SCREEN_HEIGHT * 375 / 1080);
-		m_img.SetPos(SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920, SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080);
-		m_img.Draw();
+		if (MovingLane != eNum_ReserveOpen2 || !CardMoving){
+			m_img.SetPos(SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920, SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080);
+			m_img.Draw();
+		}
 		LineNum++;
 		ListCount++;
 	}
@@ -308,8 +291,10 @@ void BaseCard::LoadTheListAndDraw() {
 	while (ListCount < Reserve_listOpen3.size()) {
 		CardNumToImage(*Itr);
 		m_img.SetSize(SCREEN_WIDTH * 250 / 1920, SCREEN_HEIGHT * 375 / 1080);
-		m_img.SetPos(SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920, SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080);
-		m_img.Draw();
+		if (MovingLane != eNum_ReserveOpen3 || ! CardMoving){
+			m_img.SetPos(SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920, SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080);
+			m_img.Draw();
+		}
 		LineNum++;
 		ListCount++;
 	}
@@ -330,8 +315,10 @@ void BaseCard::LoadTheListAndDraw() {
 	while (ListCount < Reserve_listOpen4.size()) {
 		CardNumToImage(*Itr);
 		m_img.SetSize(SCREEN_WIDTH * 250 / 1920, SCREEN_HEIGHT * 375 / 1080);
-		m_img.SetPos(SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920, SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080);
-		m_img.Draw();
+		if (MovingLane != eNum_ReserveOpen4 || !CardMoving){
+			m_img.SetPos(SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920, SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080);
+			m_img.Draw();
+		}
 		LineNum++;
 		ListCount++;
 	}
@@ -352,8 +339,10 @@ void BaseCard::LoadTheListAndDraw() {
 	while (ListCount < Reserve_listOpen5.size()) {
 		CardNumToImage(*Itr);
 		m_img.SetSize(SCREEN_WIDTH * 250 / 1920, SCREEN_HEIGHT * 375 / 1080);
-		m_img.SetPos(SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920, SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080);
-		m_img.Draw();
+		if (MovingLane != eNum_ReserveOpen5 || ! CardMoving){
+			m_img.SetPos(SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920, SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080);
+			m_img.Draw();
+		}
 		LineNum++;
 		ListCount++;
 	}
@@ -374,8 +363,10 @@ void BaseCard::LoadTheListAndDraw() {
 	while (ListCount < Reserve_listOpen6.size()) {
 		CardNumToImage(*Itr);
 		m_img.SetSize(SCREEN_WIDTH * 250 / 1920, SCREEN_HEIGHT * 375 / 1080);
-		m_img.SetPos(SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920, SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080);
-		m_img.Draw();
+		if (MovingLane != eNum_ReserveOpen6 || ! CardMoving){
+			m_img.SetPos(SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920, SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080);
+			m_img.Draw();
+		}
 		LineNum++;
 		ListCount++;
 	}
@@ -392,8 +383,10 @@ void BaseCard::LoadTheListAndDraw() {
 		Itr--;
 		CardNumToImage(*Itr);
 		m_img.SetSize(SCREEN_WIDTH * 200 / 1920, SCREEN_HEIGHT * 300 / 1080);
-		m_img.SetPos(SCREEN_WIDTH * 1500 / 1920, SCREEN_HEIGHT * 0 / 1080);
-		m_img.Draw();
+		if (MovingLane != eNum_Waste || ! CardMoving){
+			m_img.SetPos(SCREEN_WIDTH * 1500 / 1920, SCREEN_HEIGHT * 0 / 1080);
+			m_img.Draw();
+		}
 	}
 	//Foundation_list0
 	if (0 < Foundation_list0.size()) {
@@ -401,8 +394,10 @@ void BaseCard::LoadTheListAndDraw() {
 		Itr--;
 		CardNumToImage(*Itr);
 		m_img.SetSize(SCREEN_WIDTH * 200 / 1920, SCREEN_HEIGHT * 300 / 1080);
-		m_img.SetPos(SCREEN_WIDTH * 0 / 1920, SCREEN_HEIGHT * 0 / 1080);
-		m_img.Draw();
+		if (MovingLane != eNum_Foundation0 || ! CardMoving){
+			m_img.SetPos(SCREEN_WIDTH * 0 / 1920, SCREEN_HEIGHT * 0 / 1080);
+			m_img.Draw();
+		}
 	}
 	//Foundation_list1
 	if (0 < Foundation_list1.size()) {
@@ -410,8 +405,10 @@ void BaseCard::LoadTheListAndDraw() {
 		Itr--;
 		CardNumToImage(*Itr);
 		m_img.SetSize(SCREEN_WIDTH * 200 / 1920, SCREEN_HEIGHT * 300 / 1080);
-		m_img.SetPos(SCREEN_WIDTH * 210 / 1920, SCREEN_HEIGHT * 0 / 1080);
-		m_img.Draw();
+		if (MovingLane != eNum_Foundation0 || !CardMoving){
+			m_img.SetPos(SCREEN_WIDTH * 210 / 1920, SCREEN_HEIGHT * 0 / 1080);
+			m_img.Draw();
+		}
 	}
 	//Foundation_list2
 	if (0 < Foundation_list2.size()) {
@@ -419,8 +416,10 @@ void BaseCard::LoadTheListAndDraw() {
 		Itr--;
 		CardNumToImage(*Itr);
 		m_img.SetSize(SCREEN_WIDTH * 200 / 1920, SCREEN_HEIGHT * 300 / 1080);
-		m_img.SetPos(SCREEN_WIDTH * 420 / 1920, SCREEN_HEIGHT * 0 / 1080);
-		m_img.Draw();
+		if (MovingLane != eNum_Foundation0 || !CardMoving){
+			m_img.SetPos(SCREEN_WIDTH * 420 / 1920, SCREEN_HEIGHT * 0 / 1080);
+			m_img.Draw();
+		}
 	}
 	//Foundation_list3
 	if (0 < Foundation_list3.size()) {
@@ -428,8 +427,10 @@ void BaseCard::LoadTheListAndDraw() {
 		Itr--;
 		CardNumToImage(*Itr);
 		m_img.SetSize(SCREEN_WIDTH * 200 / 1920, SCREEN_HEIGHT * 300 / 1080);
-		m_img.SetPos(SCREEN_WIDTH * 630 / 1920, SCREEN_HEIGHT * 0 / 1080);
-		m_img.Draw();
+		if (MovingLane != eNum_Foundation0 || ! CardMoving){
+			m_img.SetPos(SCREEN_WIDTH * 630 / 1920, SCREEN_HEIGHT * 0 / 1080);
+			m_img.Draw();
+		}
 	}
 }
 void BaseCard::InsideOrOutsideTheCard() {
@@ -440,86 +441,288 @@ void BaseCard::InsideOrOutsideTheCard() {
 	CVector2D mouse_pos = CInput::GetMousePoint();
 	//Reserve0のカードの中にマウスがあるかどうか
 	if (SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920 <= mouse_pos.x && SCREEN_WIDTH * (25 + 250 + (250 + 20) * RowNum) / 1920 >= mouse_pos.x &&
-		SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (300 + 350 + (LineNum * Space)) / 1080 >= mouse_pos.y) {
-		ListNum = eNum_Reserve0;
-		ClickCard = true;
+		SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (375 + 350 + (LineNum * Space)) / 1080 >= mouse_pos.y) {
+		ListNum = eNum_ReserveOpen0;
+		MouseOverCard = true;
+		return;
 	}
 	//Reserve1のカードの中にマウスがあるかどうか
 	LineNum = Reserve_listOpen1.size() + Reserve_list1.size() - 1;
 	RowNum = 1;
 	if (SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920 <= mouse_pos.x && SCREEN_WIDTH * (25 + 250 + (250 + 20) * RowNum) / 1920 >= mouse_pos.x &&
-		SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (300 + 350 + (LineNum * Space)) / 1080 >= mouse_pos.y) {
-		ListNum = eNum_Reserve1;
-		ClickCard = true;
+		SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (375 + 350 + (LineNum * Space)) / 1080 >= mouse_pos.y) {
+		ListNum = eNum_ReserveOpen1;
+		MouseOverCard = true;
+		return;
 	}
 	//Reserve2のカードの中にマウスがあるかどうか
 	LineNum = Reserve_listOpen2.size() + Reserve_list2.size() - 1;
 	RowNum = 2;
 	if (SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920 <= mouse_pos.x && SCREEN_WIDTH * (25 + 250 + (250 + 20) * RowNum) / 1920 >= mouse_pos.x &&
-		SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (300 + 350 + (LineNum * Space)) / 1080 >= mouse_pos.y) {
-		ListNum = eNum_Reserve2;
-		ClickCard = true;
+		SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (375 + 350 + (LineNum * Space)) / 1080 >= mouse_pos.y) {
+		ListNum = eNum_ReserveOpen2;
+		MouseOverCard = true; 
+		return;
 	}
 	//Reserve3のカードの中にマウスがあるかどうか
 	LineNum = Reserve_listOpen3.size() + Reserve_list3.size() - 1;
 	RowNum = 3;
 	if (SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920 <= mouse_pos.x && SCREEN_WIDTH * (25 + 250 + (250 + 20) * RowNum) / 1920 >= mouse_pos.x &&
-		SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (300 + 350 + (LineNum * Space)) / 1080 >= mouse_pos.y) {
-		ListNum = eNum_Reserve3;
-		ClickCard = true;
+		SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (375 + 350 + (LineNum * Space)) / 1080 >= mouse_pos.y) {
+		ListNum = eNum_ReserveOpen3;
+		MouseOverCard = true;
+		return;
 	}
 	//Reserve4のカードの中にマウスがあるかどうか
 	LineNum = Reserve_listOpen4.size() + Reserve_list4.size() - 1;
 	RowNum = 4;
 	if (SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920 <= mouse_pos.x && SCREEN_WIDTH * (25 + 250 + (250 + 20) * RowNum) / 1920 >= mouse_pos.x &&
-		SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (300 + 350 + (LineNum * Space)) / 1080 >= mouse_pos.y) {
-		ListNum = eNum_Reserve4;
-		ClickCard = true;
+		SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (375 + 350 + (LineNum * Space)) / 1080 >= mouse_pos.y) {
+		ListNum = eNum_ReserveOpen4;
+		MouseOverCard = true;
+		return;
 	}
 	//Reserve5のカードの中にマウスがあるかどうか
 	LineNum = Reserve_listOpen5.size() + Reserve_list5.size() - 1;
 	RowNum = 5;
 	if (SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920 <= mouse_pos.x && SCREEN_WIDTH * (25 + 250 + (250 + 20) * RowNum) / 1920 >= mouse_pos.x &&
-		SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (300 + 350 + (LineNum * Space)) / 1080 >= mouse_pos.y) {
-		ListNum = eNum_Reserve5;
-		ClickCard = true;
+		SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (375 + 350 + (LineNum * Space)) / 1080 >= mouse_pos.y) {
+		ListNum = eNum_ReserveOpen5;
+		MouseOverCard = true;
+		return;
 	}
 	//Reserve6のカードの中にマウスがあるかどうか
 	LineNum = Reserve_listOpen6.size() + Reserve_list6.size() - 1;
 	RowNum = 6;
 	if (SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920 <= mouse_pos.x && SCREEN_WIDTH * (25 + 250 + (250 + 20) * RowNum) / 1920 >= mouse_pos.x &&
-		SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (300 + 350 + (LineNum * Space)) / 1080 >= mouse_pos.y) {
-		ListNum = eNum_Reserve6;
-		ClickCard = true;
+		SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (375 + 350 + (LineNum * Space)) / 1080 >= mouse_pos.y) {
+		ListNum = eNum_ReserveOpen6;
+		MouseOverCard = true;
+		return;
 	}
 	//Foundation0のカードの中にマウスがあるかどうか
 	if (SCREEN_WIDTH * 0 / 1920 <= mouse_pos.x && SCREEN_WIDTH * 200 / 1920 >= mouse_pos.x &&
 		SCREEN_HEIGHT * 0 / 1080 <= mouse_pos.y && SCREEN_HEIGHT * 300 / 1080 >= mouse_pos.y) {
 		ListNum = eNum_Foundation0;
-		ClickCard = true;
+		MouseOverCard = true;
+		return;
 	}
 	//Foundation1のカードの中にマウスがあるかどうか
 	if (SCREEN_WIDTH * 210 / 1920 <= mouse_pos.x && SCREEN_WIDTH * 410 / 1920 >= mouse_pos.x &&
 		SCREEN_HEIGHT * 0 / 1080 <= mouse_pos.y && SCREEN_HEIGHT * 300 / 1080 >= mouse_pos.y) {
 		ListNum = eNum_Foundation1;
-		ClickCard = true;
+		MouseOverCard = true;
+		return;
 	}
 	//Foundation2のカードの中にマウスがあるかどうか
 	if (SCREEN_WIDTH * 420 / 1920 <= mouse_pos.x && SCREEN_WIDTH * 620 / 1920 >= mouse_pos.x &&
 		SCREEN_HEIGHT * 0 / 1080 <= mouse_pos.y && SCREEN_HEIGHT * 300 / 1080 >= mouse_pos.y) {
 		ListNum = eNum_Foundation2;
-		ClickCard = true;
+		MouseOverCard = true;
+		return;
 	}
 	//Foundation3のカードの中にマウスがあるかどうか
 	if (SCREEN_WIDTH * 630 / 1920 <= mouse_pos.x && SCREEN_WIDTH * 830 / 1920 >= mouse_pos.x &&
 		SCREEN_HEIGHT * 0 / 1080 <= mouse_pos.y && SCREEN_HEIGHT * 300 / 1080 >= mouse_pos.y) {
 		ListNum = eNum_Foundation3;
-		ClickCard = true;
+		MouseOverCard = true;
+		return;
 	}
 	//stockのカードの中にマウスがあるかどうか
 	if (SCREEN_WIDTH * 1710 / 1920 <= mouse_pos.x && SCREEN_WIDTH * 1910 / 1920 >= mouse_pos.x &&
 		SCREEN_HEIGHT * 0 / 1080 <= mouse_pos.y && SCREEN_HEIGHT * 300 / 1080 >= mouse_pos.y) {
 		ListNum = eNum_stock;
-		ClickCard = true;
+		MouseOverCard = true;
+		return;
+	}
+	//wasteのカードの中にマウスがあるかどうか
+	if (SCREEN_WIDTH * 1500 / 1920 <= mouse_pos.x && SCREEN_WIDTH * 1700 / 1920 >= mouse_pos.x &&
+		SCREEN_HEIGHT * 0 / 1080 <= mouse_pos.y && SCREEN_HEIGHT * 300 / 1080 >= mouse_pos.y) {
+		ListNum = eNum_Waste;
+		MouseOverCard = true;
+		return;
+	}
+	else MouseOverCard = false;
+}
+void BaseCard::MovingCardDraw() {
+	auto Itr = Reserve_listOpen0.begin();
+	int LineNum = 0;//行ナンバー
+	int RowNum = 0;//列ナンバー
+	int ListCount = 0;//リストのN番目
+	int Space = 20;//場札の空白
+	//Reserve_listOpen0:1番左
+	while (ListCount < Reserve_listOpen0.size()) {
+		CardNumToImage(*Itr);
+		m_img.SetSize(SCREEN_WIDTH * 250 / 1920, SCREEN_HEIGHT * 375 / 1080);
+		if (MovingLane == eNum_ReserveOpen0 && CardMoving) {
+			m_img.SetPos(MousePos.x - (SCREEN_WIDTH * 125 / 1920), MousePos.y - (SCREEN_WIDTH * 187 / 1920));
+			m_img.Draw();
+		}
+		LineNum++;
+		ListCount++;
+	}
+	//Reserve_listOpen1:2列目
+	RowNum = 1;
+	LineNum = 0;
+	ListCount = 0;
+	Itr = Reserve_listOpen1.begin();
+	while (ListCount < Reserve_listOpen1.size()) {
+		CardNumToImage(*Itr);
+		m_img.SetSize(SCREEN_WIDTH * 250 / 1920, SCREEN_HEIGHT * 375 / 1080);
+		if (MovingLane == eNum_ReserveOpen1 && CardMoving) {
+			m_img.SetPos(MousePos.x - (SCREEN_WIDTH * 125 / 1920), MousePos.y - (SCREEN_WIDTH * 187 / 1920));
+			m_img.Draw();
+		}
+		LineNum++;
+		ListCount++;
+	}
+	//Reserve_listOpen2:3列目
+	RowNum = 2;
+	LineNum = 0;
+	ListCount = 0;
+	Itr = Reserve_listOpen2.begin();
+	while (ListCount < Reserve_listOpen2.size()) {
+		CardNumToImage(*Itr);
+		m_img.SetSize(SCREEN_WIDTH * 250 / 1920, SCREEN_HEIGHT * 375 / 1080);
+		if (MovingLane == eNum_ReserveOpen2 && CardMoving) {
+			m_img.SetPos(MousePos.x - (SCREEN_WIDTH * 125 / 1920), MousePos.y - (SCREEN_WIDTH * 187 / 1920));
+			m_img.Draw();
+		}
+		LineNum++;
+		ListCount++;
+	}
+	//Reserve_listOpen3:4列目
+	RowNum = 3;
+	LineNum = 0;
+	ListCount = 0;
+	Itr = Reserve_listOpen3.begin();
+	while (ListCount < Reserve_listOpen3.size()) {
+		CardNumToImage(*Itr);
+		m_img.SetSize(SCREEN_WIDTH * 250 / 1920, SCREEN_HEIGHT * 375 / 1080);
+		if (MovingLane == eNum_ReserveOpen3 && CardMoving) {
+			m_img.SetPos(MousePos.x - (SCREEN_WIDTH * 125 / 1920), MousePos.y - (SCREEN_WIDTH * 187 / 1920));
+			m_img.Draw();
+		}
+		LineNum++;
+		ListCount++;
+	}
+	//Reserve_listOpen4:5列目
+	RowNum = 4;
+	LineNum = 0;
+	ListCount = 0;
+	Itr = Reserve_listOpen4.begin();
+	while (ListCount < Reserve_listOpen4.size()) {
+		CardNumToImage(*Itr);
+		m_img.SetSize(SCREEN_WIDTH * 250 / 1920, SCREEN_HEIGHT * 375 / 1080);
+		if (MovingLane == eNum_ReserveOpen4 && CardMoving) {
+			m_img.SetPos(MousePos.x - (SCREEN_WIDTH * 125 / 1920), MousePos.y - (SCREEN_WIDTH * 187 / 1920));
+			m_img.Draw();
+		}
+		LineNum++;
+		ListCount++;
+	}
+	//Reserve_listOpen5:6列目
+	RowNum = 5;
+	LineNum = 0;
+	ListCount = 0;
+	Itr = Reserve_listOpen5.begin();
+	while (ListCount < Reserve_listOpen5.size()) {
+		CardNumToImage(*Itr);
+		m_img.SetSize(SCREEN_WIDTH * 250 / 1920, SCREEN_HEIGHT * 375 / 1080);
+		if (MovingLane == eNum_ReserveOpen5 && CardMoving) {
+			m_img.SetPos(MousePos.x - (SCREEN_WIDTH * 125 / 1920), MousePos.y - (SCREEN_WIDTH * 187 / 1920));
+			m_img.Draw();
+		}
+		LineNum++;
+		ListCount++;
+	}
+	//Reserve_listOpen6:7列目
+	RowNum = 6;
+	LineNum = 0;
+	ListCount = 0;
+	Itr = Reserve_listOpen6.begin();
+	while (ListCount < Reserve_listOpen6.size()) {
+		CardNumToImage(*Itr);
+		m_img.SetSize(SCREEN_WIDTH * 250 / 1920, SCREEN_HEIGHT * 375 / 1080);
+		if (MovingLane == eNum_ReserveOpen6 && CardMoving) {
+			m_img.SetPos(MousePos.x - (SCREEN_WIDTH * 125 / 1920), MousePos.y - (SCREEN_WIDTH * 187 / 1920));
+			m_img.Draw();
+		}
+		LineNum++;
+		ListCount++;
+	}//Waste_list
+	if (0 < Waste_list.size()) {
+		Itr = Waste_list.end();
+		Itr--;
+		CardNumToImage(*Itr);
+		m_img.SetSize(SCREEN_WIDTH * 250 / 1920, SCREEN_HEIGHT * 375 / 1080);
+		if (MovingLane == eNum_Waste && CardMoving) {
+			m_img.SetPos(MousePos.x - (SCREEN_WIDTH * 125 / 1920), MousePos.y - (SCREEN_WIDTH * 187 / 1920));
+			m_img.Draw();
+		}
+	}
+	//Foundation_list0
+	if (0 < Foundation_list0.size()) {
+		Itr = Foundation_list0.end();
+		Itr--;
+		CardNumToImage(*Itr);
+		m_img.SetSize(SCREEN_WIDTH * 200 / 1920, SCREEN_HEIGHT * 300 / 1080);
+		if (MovingLane == eNum_Foundation0 && CardMoving) {
+			m_img.SetPos(MousePos.x - (SCREEN_WIDTH * 125 / 1920), MousePos.y - (SCREEN_WIDTH * 187 / 1920));
+			m_img.Draw();
+		}
+	}
+	//Foundation_list1
+	if (0 < Foundation_list1.size()) {
+		Itr = Foundation_list1.end();
+		Itr--;
+		CardNumToImage(*Itr);
+		m_img.SetSize(SCREEN_WIDTH * 200 / 1920, SCREEN_HEIGHT * 300 / 1080);
+		if (MovingLane == eNum_Foundation0 && CardMoving) {
+			m_img.SetPos(MousePos.x - (SCREEN_WIDTH * 125 / 1920), MousePos.y - (SCREEN_WIDTH * 187 / 1920));
+			m_img.Draw();
+		}
+	}
+	//Foundation_list2
+	if (0 < Foundation_list2.size()) {
+		Itr = Foundation_list2.end();
+		Itr--;
+		CardNumToImage(*Itr);
+		m_img.SetSize(SCREEN_WIDTH * 200 / 1920, SCREEN_HEIGHT * 300 / 1080);
+		if (MovingLane == eNum_Foundation0 && CardMoving) {
+			m_img.SetPos(MousePos.x - (SCREEN_WIDTH * 125 / 1920), MousePos.y - (SCREEN_WIDTH * 187 / 1920));
+			m_img.Draw();
+		}
+	}
+	//Foundation_list3
+	if (0 < Foundation_list3.size()) {
+		Itr = Foundation_list3.end();
+		Itr--;
+		CardNumToImage(*Itr);
+		m_img.SetSize(SCREEN_WIDTH * 200 / 1920, SCREEN_HEIGHT * 300 / 1080);
+		if (MovingLane == eNum_Foundation0 && CardMoving) {
+			m_img.SetPos(MousePos.x - (SCREEN_WIDTH * 125 / 1920), MousePos.y - (SCREEN_WIDTH * 187 / 1920));
+			m_img.Draw();
+		}
+	}
+}
+void BaseCard::BothStockAndWaste() {
+	//左キーを押したときに、ストックリストからwasteListに移動
+	bool MouseArea = false;
+	if (SCREEN_WIDTH * 1710 / 1920 <= MousePos.x && SCREEN_WIDTH * 1910 / 1920 >= MousePos.x &&
+		SCREEN_HEIGHT * 0 / 1080 <= MousePos.y && SCREEN_HEIGHT * 300 / 1080 >= MousePos.y) {
+		MouseArea = true;
+	}
+	if (PUSH(CInput::eLeft)|| (MouseArea && PUSH(CInput::eMouseL))) {
+		if (Stock_list.size() > 0) {
+			auto ItrStock = Stock_list.begin();
+			auto ItrWaste = Waste_list.end();
+			int MoveCard = *ItrStock;
+			Stock_list.pop_front();
+			Waste_list.push_back(MoveCard);
+		}
+		else {
+			Stock_list.swap(Waste_list);
+		}
 	}
 }

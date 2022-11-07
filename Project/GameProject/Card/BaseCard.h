@@ -33,12 +33,18 @@ public:
 	//26~38がクラブ
 	//39~51がスペード
 	int CardNum[51];
+
 	//リストナンバー
+	//bool InsideOrOutsideTheCard();これを実行したら更新される
 	int ListNum;
-	//何かしらのカードをクリックされているかされていないか否か
-	bool ClickCard;
+	//今動いているカードのレーンを指定
+	int MovingLane;
+	//動かせるカードの上にマウスがあるかどうか
+	bool MouseOverCard;
 	//場札の空白
 	int Space = 20;
+	//カードが今動いているかどうか
+	bool CardMoving;
 	//すべてのカードのリスト
 	std::list<int> AllCard_list = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51 };
 	//余ってるカードのリスト
@@ -69,6 +75,7 @@ public:
 	CImage spade[14];//スペードの黒
 	CImage BehindCard;//トランプの背面の画像
 	CImage m_img;//選択中の画像。Temp
+	CVector2D MousePos;
 public:
 	BaseCard();
 	~BaseCard();
@@ -82,7 +89,11 @@ public:
 	void CardNumToImage(int ThatCardNumber);
 	//リストを読み込み、画像を指定、配置。
 	void LoadTheListAndDraw();
+	//動いているカードの表示
+	void MovingCardDraw();
 	//マウスが動かせるカードの上にあるかないか。
-	//ある場合ClickCardをtrueにし、ListNumを更新する。
+	//ある場合,	MouseOverCard=trueにする、ListNumを更新する。
 	void InsideOrOutsideTheCard();
+	//StockListとWaseteListの双方向移動
+	void BothStockAndWaste();
 };
