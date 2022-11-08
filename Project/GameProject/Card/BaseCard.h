@@ -96,4 +96,7 @@ public:
 	void InsideOrOutsideTheCard();
 	//StockListとWaseteListの双方向移動
 	void BothStockAndWaste();
+	// カードから一定範囲内で、一番近いカードに置けるかどうか試して
+	//置ける場合はそのリストの１番最後に追加
+	//void
 };

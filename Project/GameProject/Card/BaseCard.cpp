@@ -33,6 +33,11 @@ void BaseCard::Update() {
 		MovingLane = ListNum;
 		CardMoving = true;
 	}
+	//マウスを離したとき
+	if (PULL(CInput::eMouseL)) {
+		// カードから一定範囲内で、一番近いカードに置けるかどうか試して
+		//置ける場合はそのリストの１番最後に追加
+	}
 	if (FREE(CInput::eMouseL)) {
 		CardMoving = false;
 	}
