@@ -29,8 +29,8 @@ public:
 	};
 	//カードの数字。
 	//0~12がハート
-	//13~25がダイヤ
-	//26~38がクラブ
+	//13~25がクラブ
+	//26~38がダイヤ
 	//39~51がスペード
 	int CardNum[51];
 
@@ -98,5 +98,11 @@ public:
 	void BothStockAndWaste();
 	// カードから一定範囲内で、一番近いカードに置けるかどうか試して
 	//置ける場合はそのリストの１番最後に追加
-	//void
+	
+	//openリストにカードが有るかどうか確かめる。もしなかったら追加
+	void OpenListCheckAndAdd();
+	//左クリックを離したとき、動いてるカードがどこかのreserveリストに置けるかチェック。置けたらリスト移動
+	void CheckAddToReserveList();
+	//左クリックを離したとき、動いてるカードがどこかのFoundationリストに置けるかチェック。置けたらリスト移動
+	void CheckAddToFoundationList();
 };
