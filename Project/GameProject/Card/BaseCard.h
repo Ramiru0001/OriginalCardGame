@@ -105,4 +105,8 @@ public:
 	void CheckAddToReserveList();
 	//左クリックを離したとき、動いてるカードがどこかのFoundationリストに置けるかチェック。置けたらリスト移動
 	void CheckAddToFoundationList();
+	//ListNumのリストの最後を削除
+	void RemoveFromListend(int ListNum);
+	//ListNumのリストの最後に追加
+	void AddToListend(int ListNum,int AddNum);
 };

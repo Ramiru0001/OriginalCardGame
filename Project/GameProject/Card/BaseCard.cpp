@@ -870,74 +870,15 @@ void BaseCard::CheckAddToReserveList(){
 		//上におけるカードだった場合
 		if (*SearchCard_Itr + 12 == *MovingCard_Itr || *SearchCard_Itr + 38 == *MovingCard_Itr || *SearchCard_Itr - 14 == *MovingCard_Itr || *SearchCard_Itr - 40 == *MovingCard_Itr) {
 			//移動先のリストに追加
-			switch (ListNum) {
-			case eNum_ReserveOpen0:
-				Reserve_listOpen0.push_back(*MovingCard_Itr);
-				break;
-			case eNum_ReserveOpen1:
-				Reserve_listOpen1.push_back(*MovingCard_Itr);
-				break;
-			case eNum_ReserveOpen2:
-				Reserve_listOpen2.push_back(*MovingCard_Itr);
-				break;
-			case eNum_ReserveOpen3:
-				Reserve_listOpen3.push_back(*MovingCard_Itr);
-				break;
-			case eNum_ReserveOpen4:
-				Reserve_listOpen4.push_back(*MovingCard_Itr);
-				break;
-			case eNum_ReserveOpen5:
-				Reserve_listOpen5.push_back(*MovingCard_Itr);
-				break;
-			case eNum_ReserveOpen6:
-				Reserve_listOpen6.push_back(*MovingCard_Itr);
-				break;
-			}
+			AddToListend(ListNum, *MovingCard_Itr);
 			//動いてるカードのリストを削除
-			switch (MovingLane) {
-			case eNum_Waste:
-				Waste_list.pop_back();
-				break;
-			case eNum_ReserveOpen0:
-				Reserve_listOpen0.pop_back();
-				break;
-			case eNum_ReserveOpen1:
-				Reserve_listOpen1.pop_back();
-				break;
-			case eNum_ReserveOpen2:
-				Reserve_listOpen2.pop_back();
-				break;
-			case eNum_ReserveOpen3:
-				Reserve_listOpen3.pop_back();
-				break;
-			case eNum_ReserveOpen4:
-				Reserve_listOpen4.pop_back();
-				break;
-			case eNum_ReserveOpen5:
-				Reserve_listOpen5.pop_back();
-				break;
-			case eNum_ReserveOpen6:
-				Reserve_listOpen6.pop_back();
-				break;
-			case eNum_Foundation0:
-				Foundation_list0.pop_back();
-				break;
-			case eNum_Foundation1:
-				Foundation_list1.pop_back();
-				break;
-			case eNum_Foundation2:
-				Foundation_list2.pop_back();
-				break;
-			case eNum_Foundation3:
-				Foundation_list3.pop_back();
-				break;
-			}
+			RemoveFromListend(MovingLane);
 		}
 	}
 }
 void BaseCard::CheckAddToFoundationList() {
-	auto MovingCard_Itr = Reserve_listOpen0.end();
-	auto SearchCard_Itr = Reserve_listOpen0.end();
+	auto MovingCard_Itr = Reserve_listOpen0.begin();
+	auto SearchCard_Itr = Reserve_listOpen0.begin();
 	if (PUSH(CInput::eMouseL) && MouseOverCard) {
 		//foundationListに置けるなら置く
 		//Movinglaneの最後のカードのポインタがいずれかのfoundationListのポインタ＋１だったら移動
@@ -969,14 +910,123 @@ void BaseCard::CheckAddToFoundationList() {
 		}
 		MovingCard_Itr--;
 		//動いたカードのイテレータ指定ここまで
-		if (*MovingCard_Itr == 0) {
-			Foundation_list0.push_front(*MovingCard_Itr);
-		}else if (*MovingCard_Itr == 13) {
-			Foundation_list1.push_front(*MovingCard_Itr);
-		}else if (*MovingCard_Itr == 26) {
-			Foundation_list2.push_front(*MovingCard_Itr);
-		}else if (*MovingCard_Itr == 39) {
-			Foundation_list3.push_front(*MovingCard_Itr);
+		//カードが1の場合
+		if (*MovingCard_Itr == 0 || *MovingCard_Itr == 13 || *MovingCard_Itr == 26 || *MovingCard_Itr == 39) {
+			//リストにデータ入力
+			if (*MovingCard_Itr == 0) {
+				Foundation_list0.push_front(*MovingCard_Itr);
+			}
+			else if (*MovingCard_Itr == 13) {
+				Foundation_list1.push_front(*MovingCard_Itr);
+			}
+			else if (*MovingCard_Itr == 26) {
+				Foundation_list2.push_front(*MovingCard_Itr);
+			}
+			else if (*MovingCard_Itr == 39) {
+				Foundation_list3.push_front(*MovingCard_Itr);
+			}
+			RemoveFromListend(MovingLane);
 		}
+		//カードが2~13の場合
+		else {
+			if (1 <= *MovingCard_Itr && *MovingCard_Itr <= 12) {
+				SearchCard_Itr=Foundation_list0.end();
+				SearchCard_Itr--;
+				if (*SearchCard_Itr + 1 == *MovingCard_Itr) {
+					Foundation_list0.push_back(*MovingCard_Itr);
+					RemoveFromListend(MovingLane);
+				}
+			}
+			else if (14 <= *MovingCard_Itr && *MovingCard_Itr <= 25) {
+				SearchCard_Itr = Foundation_list1.end();
+				SearchCard_Itr--;
+				if (*SearchCard_Itr + 1 == *MovingCard_Itr) {
+					Foundation_list1.push_back(*MovingCard_Itr);
+					RemoveFromListend(MovingLane);
+				}
+			}
+			else if (27 <= *MovingCard_Itr && *MovingCard_Itr <= 38) {
+				SearchCard_Itr = Foundation_list2.end();
+				SearchCard_Itr--;
+				if (*SearchCard_Itr + 1 == *MovingCard_Itr) {
+					Foundation_list2.push_back(*MovingCard_Itr);
+					RemoveFromListend(MovingLane);
+				}
+			}
+			else if (40 <= *MovingCard_Itr && *MovingCard_Itr <= 51) {
+				SearchCard_Itr = Foundation_list3.end();
+				SearchCard_Itr--;
+				if (*SearchCard_Itr + 1 == *MovingCard_Itr) {
+					Foundation_list3.push_back(*MovingCard_Itr);
+					RemoveFromListend(MovingLane);
+				}
+			}
+		}
+	}
+}
+void BaseCard::RemoveFromListend(int ListNum) {
+	//リストから削除
+	switch (ListNum) {
+	case eNum_Waste:
+		Waste_list.pop_back();
+		break;
+	case eNum_ReserveOpen0:
+		Reserve_listOpen0.pop_back();
+		break;
+	case eNum_ReserveOpen1:
+		Reserve_listOpen1.pop_back();
+		break;
+	case eNum_ReserveOpen2:
+		Reserve_listOpen2.pop_back();
+		break;
+	case eNum_ReserveOpen3:
+		Reserve_listOpen3.pop_back();
+		break;
+	case eNum_ReserveOpen4:
+		Reserve_listOpen4.pop_back();
+		break;
+	case eNum_ReserveOpen5:
+		Reserve_listOpen5.pop_back();
+		break;
+	case eNum_ReserveOpen6:
+		Reserve_listOpen6.pop_back();
+		break;
+	case eNum_Foundation0:
+		Foundation_list0.pop_back();
+		break;
+	case eNum_Foundation1:
+		Foundation_list1.pop_back();
+		break;
+	case eNum_Foundation2:
+		Foundation_list2.pop_back();
+		break;
+	case eNum_Foundation3:
+		Foundation_list3.pop_back();
+		break;
+	}
+}
+void BaseCard::AddToListend(int ListNum, int AddNum) {
+	switch (ListNum) {
+	case eNum_ReserveOpen0:
+		Reserve_listOpen0.push_back(AddNum);
+		break;
+	case eNum_ReserveOpen1:
+		Reserve_listOpen1.push_back(AddNum);
+		break;
+	case eNum_ReserveOpen2:
+		Reserve_listOpen2.push_back(AddNum);
+		break;
+	case eNum_ReserveOpen3:
+		Reserve_listOpen3.push_back(AddNum);
+		break;
+	case eNum_ReserveOpen4:
+		Reserve_listOpen4.push_back(AddNum);
+		break;
+	case eNum_ReserveOpen5:
+		Reserve_listOpen5.push_back(AddNum);
+		break;
+	case eNum_ReserveOpen6:
+		Reserve_listOpen6.push_back(AddNum);
+		break;
 	}
 }
