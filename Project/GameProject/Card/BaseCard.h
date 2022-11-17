@@ -111,4 +111,6 @@ public:
 	void AddToListend(int ListNum,int AddNum);
 	//因数のListNumのリストがemptyか否か
 	bool EmptyOrNotTheList(int ListNum);
+	//リストの最初を削除
+	void DeleteListFront(int ListNum);
 };
