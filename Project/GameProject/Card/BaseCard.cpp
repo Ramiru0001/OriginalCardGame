@@ -1087,5 +1087,10 @@ bool BaseCard::EmptyOrNotTheList(int ListNum) {
 	case eNum_Foundation3:
 		return Foundation_list3.empty();
 		break;
+	case eNum_Waste:
+		return Waste_list.empty();
+		break;
+	default:
+		return false;
 	}
 }
