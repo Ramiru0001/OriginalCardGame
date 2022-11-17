@@ -109,4 +109,6 @@ public:
 	void RemoveFromListend(int ListNum);
 	//ListNumのリストの最後に追加
 	void AddToListend(int ListNum,int AddNum);
+	//因数のListNumのリストがemptyか否か
+	bool EmptyOrNotTheList(int ListNum);
 };

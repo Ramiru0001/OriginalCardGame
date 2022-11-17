@@ -36,8 +36,8 @@ void BaseCard::Update() {
 	//マウスを離したとき
 	//近くのカードの上に置けるかどうか試して
 	//置ける場合はそのリストの１番最後に追加
-	CheckAddToReserveList();
 	CheckAddToFoundationList();
+	CheckAddToReserveList();
 	//もし、openのリストに何もなければ、１枚移動する。
 	OpenListCheckAndAdd();
 	if (FREE(CInput::eMouseL)) {
@@ -797,11 +797,17 @@ void BaseCard::OpenListCheckAndAdd() {
 	}
 }
 void BaseCard::CheckAddToReserveList(){
+	//emptyの場合、おしまい
+	//emptyじゃない場合↓
+	if (EmptyOrNotTheList(MovingLane)) {
+		return;
+	}
 	auto MovingCard_Itr = Reserve_listOpen0.end();
 	auto SearchCard_Itr = Reserve_listOpen0.end();
 	if (PULL(CInput::eMouseL) && MouseOverCard) {
 		//ListNumの番号のリストに追加
 		//動いてるカードリストの、判定するカードを指定
+		//emptyだった場合の処理とemptyではない場合の処理が必要
 		switch (MovingLane) {
 		case eNum_Waste:
 			MovingCard_Itr = Waste_list.end();
@@ -881,7 +887,11 @@ void BaseCard::CheckAddToFoundationList() {
 	auto SearchCard_Itr = Reserve_listOpen0.begin();
 	if (PUSH(CInput::eMouseL) && MouseOverCard) {
 		//foundationListに置けるなら置く
-		//Movinglaneの最後のカードのポインタがいずれかのfoundationListのポインタ＋１だったら移動
+		// そのカードのレーンがemptyの場合=カードが１の場合
+		//MovingLaneにカードがない場合、終了
+		if (EmptyOrNotTheList(MovingLane)) {
+			return;
+		}
 		switch (MovingLane) {
 		case eNum_Waste:
 			MovingCard_Itr = Waste_list.end();
@@ -909,56 +919,68 @@ void BaseCard::CheckAddToFoundationList() {
 			break;
 		}
 		MovingCard_Itr--;
+		// emptyじゃなくて、かつ、２~１３の場合
 		//動いたカードのイテレータ指定ここまで
 		//カードが1の場合
 		if (*MovingCard_Itr == 0 || *MovingCard_Itr == 13 || *MovingCard_Itr == 26 || *MovingCard_Itr == 39) {
 			//リストにデータ入力
 			if (*MovingCard_Itr == 0) {
 				Foundation_list0.push_front(*MovingCard_Itr);
+				CardMoving = false;
 			}
 			else if (*MovingCard_Itr == 13) {
 				Foundation_list1.push_front(*MovingCard_Itr);
+				CardMoving = false;
 			}
 			else if (*MovingCard_Itr == 26) {
 				Foundation_list2.push_front(*MovingCard_Itr);
+				CardMoving = false;
 			}
 			else if (*MovingCard_Itr == 39) {
 				Foundation_list3.push_front(*MovingCard_Itr);
+				CardMoving = false;
 			}
 			RemoveFromListend(MovingLane);
+			return;
 		}
+		//そのカードの模様のfoundationlistがemptyじゃない場合；
 		//カードが2~13の場合
 		else {
-			if (1 <= *MovingCard_Itr && *MovingCard_Itr <= 12) {
+			if (1 <= *MovingCard_Itr && *MovingCard_Itr <= 12 && !Foundation_list0.empty()) {
 				SearchCard_Itr=Foundation_list0.end();
 				SearchCard_Itr--;
+				//Movinglaneの最後のカードのポインタがいずれかのfoundationListのポインタ＋１だったら移動
 				if (*SearchCard_Itr + 1 == *MovingCard_Itr) {
 					Foundation_list0.push_back(*MovingCard_Itr);
 					RemoveFromListend(MovingLane);
+					CardMoving = false;
 				}
 			}
-			else if (14 <= *MovingCard_Itr && *MovingCard_Itr <= 25) {
+			else if (14 <= *MovingCard_Itr && *MovingCard_Itr <= 25 && !Foundation_list1.empty()) {
 				SearchCard_Itr = Foundation_list1.end();
 				SearchCard_Itr--;
 				if (*SearchCard_Itr + 1 == *MovingCard_Itr) {
 					Foundation_list1.push_back(*MovingCard_Itr);
 					RemoveFromListend(MovingLane);
+					CardMoving = false;
 				}
 			}
-			else if (27 <= *MovingCard_Itr && *MovingCard_Itr <= 38) {
+			else if (27 <= *MovingCard_Itr && *MovingCard_Itr <= 38 && !Foundation_list2.empty()) {
 				SearchCard_Itr = Foundation_list2.end();
 				SearchCard_Itr--;
 				if (*SearchCard_Itr + 1 == *MovingCard_Itr) {
 					Foundation_list2.push_back(*MovingCard_Itr);
 					RemoveFromListend(MovingLane);
+					CardMoving = false;
 				}
 			}
-			else if (40 <= *MovingCard_Itr && *MovingCard_Itr <= 51) {
+			else if (40 <= *MovingCard_Itr && *MovingCard_Itr <= 51 && !Foundation_list3.empty()) {
 				SearchCard_Itr = Foundation_list3.end();
 				SearchCard_Itr--;
 				if (*SearchCard_Itr + 1 == *MovingCard_Itr) {
 					Foundation_list3.push_back(*MovingCard_Itr);
 					RemoveFromListend(MovingLane);
+					CardMoving = false;
 				}
 			}
 		}
@@ -1027,6 +1049,43 @@ void BaseCard::AddToListend(int ListNum, int AddNum) {
 		break;
 	case eNum_ReserveOpen6:
 		Reserve_listOpen6.push_back(AddNum);
+		break;
+	}
+}
+bool BaseCard::EmptyOrNotTheList(int ListNum) {
+	switch (ListNum) {
+	case eNum_ReserveOpen0:
+		return Reserve_listOpen0.empty();
+		break;
+	case eNum_ReserveOpen1:
+		return Reserve_listOpen1.empty();
+		break;
+	case eNum_ReserveOpen2:
+		return Reserve_listOpen2.empty();
+		break;
+	case eNum_ReserveOpen3:
+		return Reserve_listOpen3.empty();
+		break;
+	case eNum_ReserveOpen4:
+		return Reserve_listOpen4.empty();
+		break;
+	case eNum_ReserveOpen5:
+		return Reserve_listOpen5.empty();
+		break;
+	case eNum_ReserveOpen6:
+		return Reserve_listOpen6.empty();
+		break;
+	case eNum_Foundation0:
+		return Foundation_list0.empty();
+		break;
+	case eNum_Foundation1:
+		return Foundation_list1.empty();
+		break;
+	case eNum_Foundation2:
+		return Foundation_list2.empty();
+		break;
+	case eNum_Foundation3:
+		return Foundation_list3.empty();
 		break;
 	}
 }
