@@ -41,6 +41,8 @@ public:
 	int MovingLane;
 	//動かせるカードの上にマウスがあるかどうか
 	bool MouseOverCard;
+	//resreveリストかWasteリストの上にマウスがあるかどうか
+	bool MouseOverReserveAndWasteLists;
 	//場札の空白
 	int Space = 20;
 	//カードが今動いているかどうか
@@ -113,4 +115,6 @@ public:
 	bool EmptyOrNotTheList(int ListNum);
 	//リストの最初を削除
 	void DeleteListFront(int ListNum);
+	//リストの要素数を戻り値とする
+	int CheckListSize(int ListNum);
 };
