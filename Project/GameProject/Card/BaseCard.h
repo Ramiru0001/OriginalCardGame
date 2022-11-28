@@ -41,6 +41,8 @@ public:
 	int MovingLane;
 	//動かせるカードの上にマウスがあるかどうか
 	bool MouseOverCard;
+	//reserveリストの上にマウスがあるかどうか
+	bool MouseOverReserve;
 	//resreveリストかWasteリストの上にマウスがあるかどうか
 	bool MouseOverReserveAndWasteLists;
 	//場札の空白
@@ -100,7 +102,7 @@ public:
 	void BothStockAndWaste();
 	// カードから一定範囲内で、一番近いカードに置けるかどうか試して
 	//置ける場合はそのリストの１番最後に追加
-	
+	// 
 	//openリストにカードが有るかどうか確かめる。もしなかったら追加
 	void OpenListCheckAndAdd();
 	//左クリックを離したとき、動いてるカードがどこかのreserveリストに置けるかチェック。置けたらリスト移動
@@ -117,4 +119,7 @@ public:
 	void DeleteListFront(int ListNum);
 	//リストの要素数を戻り値とする
 	int CheckListSize(int ListNum);
+	//もしKのカードなら、移動可能
+	void MoveIfK();
+
 };

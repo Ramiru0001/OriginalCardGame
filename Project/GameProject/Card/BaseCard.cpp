@@ -35,10 +35,20 @@ void BaseCard::Update() {
 		}
 	}
 	//マウスを離したとき
-	//近くのカードの上に置けるかどうか試して
+	//マウスの下のreserveリストにおけるか試して
 	//置ける場合はそのリストの１番最後に追加
-	if (PULL(CInput::eMouseL) && MouseOverCard) {
-		CheckAddToReserveList();
+	//Kのカードの場合、そのリストが空白だったらそのままおける
+	if (PULL(CInput::eMouseL) && MouseOverReserve) {
+		//マウスの下のリストが空白の場合
+		if (EmptyOrNotTheList(ListNum)) {
+			//動かしてるリストの一番最初のカードがKの場合、
+			//置ける
+			MoveIfK();
+		}
+		//マウスの下のリストと動かしてるリストの両方が空白じゃない場合
+		else if (!EmptyOrNotTheList(MovingLane) || !EmptyOrNotTheList(ListNum)) {
+			CheckAddToReserveList();
+		}
 	}
 	//もし、openのリストに何もなければ、１枚移動する。
 	OpenListCheckAndAdd();
@@ -460,6 +470,7 @@ void BaseCard::InsideOrOutsideTheCard() {
 		SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (375 + 350 + (LineNum * Space)) / 1080 >= mouse_pos.y) {
 		ListNum = eNum_ReserveOpen0;
 		MouseOverCard = true;
+		MouseOverReserve = true;
 		MouseOverReserveAndWasteLists = true;
 		return;
 	}
@@ -470,6 +481,7 @@ void BaseCard::InsideOrOutsideTheCard() {
 		SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (375 + 350 + (LineNum * Space)) / 1080 >= mouse_pos.y) {
 		ListNum = eNum_ReserveOpen1;
 		MouseOverCard = true;
+		MouseOverReserve = true;
 		MouseOverReserveAndWasteLists = true;
 		return;
 	}
@@ -479,7 +491,8 @@ void BaseCard::InsideOrOutsideTheCard() {
 	if (SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920 <= mouse_pos.x && SCREEN_WIDTH * (25 + 250 + (250 + 20) * RowNum) / 1920 >= mouse_pos.x &&
 		SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (375 + 350 + (LineNum * Space)) / 1080 >= mouse_pos.y) {
 		ListNum = eNum_ReserveOpen2;
-		MouseOverCard = true; 
+		MouseOverCard = true;
+		MouseOverReserve = true;
 		MouseOverReserveAndWasteLists = true;
 		return;
 	}
@@ -490,6 +503,7 @@ void BaseCard::InsideOrOutsideTheCard() {
 		SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (375 + 350 + (LineNum * Space)) / 1080 >= mouse_pos.y) {
 		ListNum = eNum_ReserveOpen3;
 		MouseOverCard = true;
+		MouseOverReserve = true;
 		MouseOverReserveAndWasteLists = true;
 		return;
 	}
@@ -500,6 +514,7 @@ void BaseCard::InsideOrOutsideTheCard() {
 		SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (375 + 350 + (LineNum * Space)) / 1080 >= mouse_pos.y) {
 		ListNum = eNum_ReserveOpen4;
 		MouseOverCard = true;
+		MouseOverReserve = true;
 		MouseOverReserveAndWasteLists = true;
 		return;
 	}
@@ -510,6 +525,7 @@ void BaseCard::InsideOrOutsideTheCard() {
 		SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (375 + 350 + (LineNum * Space)) / 1080 >= mouse_pos.y) {
 		ListNum = eNum_ReserveOpen5;
 		MouseOverCard = true;
+		MouseOverReserve = true;
 		MouseOverReserveAndWasteLists = true;
 		return;
 	}
@@ -520,6 +536,7 @@ void BaseCard::InsideOrOutsideTheCard() {
 		SCREEN_HEIGHT * (350 + (LineNum * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (375 + 350 + (LineNum * Space)) / 1080 >= mouse_pos.y) {
 		ListNum = eNum_ReserveOpen6;
 		MouseOverCard = true;
+		MouseOverReserve = true;
 		MouseOverReserveAndWasteLists = true;
 		return;
 	}
@@ -568,6 +585,7 @@ void BaseCard::InsideOrOutsideTheCard() {
 	}
 	else {
 		MouseOverCard = false;
+		MouseOverReserve = false;
 		MouseOverReserveAndWasteLists = false;
 	}
 }
@@ -812,9 +830,9 @@ void BaseCard::OpenListCheckAndAdd() {
 void BaseCard::CheckAddToReserveList(){
 	//emptyの場合、おしまい
 	//emptyじゃない場合↓
-	if (EmptyOrNotTheList(MovingLane)|| EmptyOrNotTheList(ListNum)) {
+	/*if (EmptyOrNotTheList(MovingLane)|| EmptyOrNotTheList(ListNum)) {
 		return;
-	}
+	}*/
 	auto MovingCard_Itr = Reserve_listOpen0.end();
 	auto SearchCard_Itr = Reserve_listOpen0.end();
 	//ListNumの番号のリストに追加
@@ -1213,5 +1231,77 @@ int BaseCard::CheckListSize(int ListNum) {
 	case eNum_Foundation3:
 		return Foundation_list3.size();
 		break;
+	}
+}
+void BaseCard::MoveIfK() {
+	//もし、動かしてるカードのリストがReserveOpenかwasteで、その一番最初がKなら
+	//移動可能
+	if (eNum_ReserveOpen0 <= MovingLane && MovingLane <= eNum_ReserveOpen6){}
+	else if (MovingLane == eNum_Waste){}
+	else {
+		return;
+	}
+	auto Itr= Reserve_listOpen0.begin();
+	//まず、reserveopenの場合、
+	//Kかどうかを確かめる
+	switch (MovingLane) {
+	case eNum_ReserveOpen0:
+		Itr= Reserve_listOpen0.begin();
+		break;
+	case eNum_ReserveOpen1:
+		Itr = Reserve_listOpen1.begin();
+		break;
+	case eNum_ReserveOpen2:
+		Itr = Reserve_listOpen2.begin();
+		break;
+	case eNum_ReserveOpen3:
+		Itr = Reserve_listOpen3.begin();
+		break;
+	case eNum_ReserveOpen4:
+		Itr = Reserve_listOpen4.begin();
+		break;
+	case eNum_ReserveOpen5:
+		Itr = Reserve_listOpen5.begin();
+		break;
+	case eNum_ReserveOpen6:
+		Itr = Reserve_listOpen6.begin();
+		break;
+	case eNum_Waste:
+		Itr = Waste_list.end();
+		Itr--;
+		break;
+	}
+	//Kの場合
+	if (*Itr == 12 || *Itr == 25 || *Itr == 38 || *Itr == 51) {
+		//movingLaneからListNumへ、要素の中身をすべて移動
+		switch (MovingLane) {
+		case eNum_ReserveOpen0:
+		case eNum_ReserveOpen1:
+		case eNum_ReserveOpen2:
+		case eNum_ReserveOpen3:
+		case eNum_ReserveOpen4:
+		case eNum_ReserveOpen5:
+		case eNum_ReserveOpen6:
+			// すべてのカードを移動させて、もとのリストを前消しする。
+			while (!EmptyOrNotTheList(MovingLane)) {
+				AddToListend(ListNum, *Itr);
+				if (CheckListSize(MovingLane) >= 2) {
+					Itr++;
+				}
+				DeleteListFront(MovingLane);
+				if (EmptyOrNotTheList(MovingLane)) {
+					break;
+				}
+			}
+			break;
+		case eNum_Waste:
+			//foundationリストから動かす場合。
+			//移動先のリストに追加
+			AddToListend(ListNum, *Itr);
+			//動いてるカードのリストを削除
+			RemoveFromListend(MovingLane);
+			//１枚の場合の処理しか書いてないため、複数枚動かすとまともに動かない
+			break;
+		}
 	}
 }
