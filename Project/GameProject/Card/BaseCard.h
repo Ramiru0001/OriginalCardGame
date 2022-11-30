@@ -4,6 +4,11 @@
 //カードを引いたときに呼ばれる
 class BaseCard :public Base{
 public:
+	//現在のゲーム設定
+	enum {
+		eState_Normal,
+		eState_Auto,
+	};
 	//リストナンバー
 	enum {
 		eNum_stock,
@@ -45,8 +50,14 @@ public:
 	bool MouseOverReserve;
 	//resreveリストかWasteリストの上にマウスがあるかどうか
 	bool MouseOverReserveAndWasteLists;
-	//場札の空白
+	//stockリストの上にマウスがあるかどうか
+	bool MouseOverStockList;
+	///場札の空白 20
 	int Space = 20;
+	//場札openの空白 50
+	int OpenSpace = 50;
+	//選択中のモード：0_normal;1_auto
+	int SelectMode = 0;
 	//カードが今動いているかどうか
 	bool CardMoving;
 	//すべてのカードのリスト
@@ -121,5 +132,10 @@ public:
 	int CheckListSize(int ListNum);
 	//もしKのカードなら、移動可能
 	void MoveIfK();
-
+	//通常モード
+	void NormalMode();
+	//Autoモード
+	void AutoMode();
+	//すべてのreserveリストが空白ならtrue;
+	bool CheckReserveEmpty();
 };
