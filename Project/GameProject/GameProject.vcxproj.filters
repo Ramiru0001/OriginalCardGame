@@ -8,11 +8,12 @@
     <ClCompile Include="Card\BaseCard.cpp">
       <Filter>Card</Filter>
     </ClCompile>
+    <ClCompile Include="SelectScene\SelectScene.cpp">
+      <Filter>SelectScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Settings.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Game">
-      <UniqueIdentifier>{51fca050-6d31-44a9-8f76-816792b3a820}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Base">
       <UniqueIdentifier>{cb110097-59e6-4df2-a25d-840205226376}</UniqueIdentifier>
     </Filter>
@@ -22,6 +23,9 @@
     <Filter Include="Card">
       <UniqueIdentifier>{fe314d3d-143a-4946-9489-69ec95e395b1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SelectScene">
+      <UniqueIdentifier>{56472de1-89b1-406a-9f54-91dbc80aec92}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base\Base.h">
@@ -30,5 +34,9 @@
     <ClInclude Include="Card\BaseCard.h">
       <Filter>Card</Filter>
     </ClInclude>
+    <ClInclude Include="SelectScene\SelectScene.h">
+      <Filter>SelectScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Settings.h" />
   </ItemGroup>
 </Project>

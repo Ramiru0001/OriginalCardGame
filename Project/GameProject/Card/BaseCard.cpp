@@ -138,7 +138,7 @@ void BaseCard::CardListSet() {
 		}
 	}
 	//std::cout << Remaining_list.size() << std::endl;
-	std::cout << "Stock :";
+	/*std::cout << "Stock :";
 	for (auto const& i : Stock_list) {
 		std::cout << "," << i ;
 	}
@@ -170,7 +170,7 @@ void BaseCard::CardListSet() {
 	for (auto const& i : Reserve_list6) {
 		std::cout << "," << i;
 	}
-	std::cout<<std::endl;
+	std::cout<<std::endl;*/
 	//std::cout << std::endl << " Foundation_list :" ;
 	/*for (auto const& i : Foundation_list) {
 		std::cout << "," << i;
@@ -793,11 +793,13 @@ void BaseCard::MovingCardDraw() {
 void BaseCard::BothStockAndWaste() {
 	if (Stock_list.size() > 0) {
 		auto ItrStock = Stock_list.begin();
+		AddToMoved_Log(eNum_stock, *ItrStock, eNum_Waste, 0);
 		Waste_list.push_back(*ItrStock);
 		Stock_list.pop_front();
 	}
 	else {
 		Stock_list.swap(Waste_list);
+		AddToMoved_Log(eNum_Waste, 0, eNum_stock, 0);
 	}
 }
 void BaseCard::OpenListCheckAndAdd() {
@@ -805,6 +807,7 @@ void BaseCard::OpenListCheckAndAdd() {
 		if (!Reserve_list0.empty()) {
 			auto Itr = Reserve_list0.end();
 			Itr--;
+			AddToMoved_Log(eNum_Reserve0, *Itr, eNum_ReserveOpen0, 0);
 			Reserve_listOpen0.push_back(*Itr);
 			Reserve_list0.pop_back();
 		}
@@ -813,6 +816,7 @@ void BaseCard::OpenListCheckAndAdd() {
 		if (!Reserve_list1.empty()) {
 			auto Itr = Reserve_list1.end();
 			Itr--;
+			AddToMoved_Log(eNum_Reserve1, *Itr, eNum_ReserveOpen1, 0);
 			Reserve_listOpen1.push_back(*Itr);
 			Reserve_list1.pop_back();
 		}
@@ -821,6 +825,7 @@ void BaseCard::OpenListCheckAndAdd() {
 		if (!Reserve_list2.empty()) {
 			auto Itr = Reserve_list2.end();
 			Itr--;
+			AddToMoved_Log(eNum_Reserve2, *Itr, eNum_ReserveOpen2, 0);
 			Reserve_listOpen2.push_back(*Itr);
 			Reserve_list2.pop_back();
 		}
@@ -829,6 +834,7 @@ void BaseCard::OpenListCheckAndAdd() {
 		if (!Reserve_list3.empty()) {
 			auto Itr = Reserve_list3.end();
 			Itr--;
+			AddToMoved_Log(eNum_Reserve3, *Itr, eNum_ReserveOpen3, 0);
 			Reserve_listOpen3.push_back(*Itr);
 			Reserve_list3.pop_back();
 		}
@@ -837,6 +843,7 @@ void BaseCard::OpenListCheckAndAdd() {
 		if (!Reserve_list4.empty()) {
 			auto Itr = Reserve_list4.end();
 			Itr--;
+			AddToMoved_Log(eNum_Reserve4, *Itr, eNum_ReserveOpen4, 0);
 			Reserve_listOpen4.push_back(*Itr);
 			Reserve_list4.pop_back();
 		}
@@ -845,6 +852,7 @@ void BaseCard::OpenListCheckAndAdd() {
 		if (!Reserve_list5.empty()) {
 			auto Itr = Reserve_list5.end();
 			Itr--;
+			AddToMoved_Log(eNum_Reserve5, *Itr, eNum_ReserveOpen5, 0);
 			Reserve_listOpen5.push_back(*Itr);
 			Reserve_list5.pop_back();
 		}
@@ -853,6 +861,7 @@ void BaseCard::OpenListCheckAndAdd() {
 		if (!Reserve_list6.empty()) {
 			auto Itr = Reserve_list6.end();
 			Itr--;
+			AddToMoved_Log(eNum_Reserve6, *Itr, eNum_ReserveOpen6, 0);
 			Reserve_listOpen6.push_back(*Itr);
 			Reserve_list6.pop_back();
 		}
@@ -869,6 +878,7 @@ void BaseCard::CheckAddToReserveList(){
 	//ListNumの番号のリストに追加
 	//動いてるカードリストの、判定するカードを指定
 	//emptyだった場合の処理とemptyではない場合の処理が必要
+	//std::cout << "Itr指定fin";
 	switch (MovingLane) {
 	case eNum_Waste:
 		MovingCard_Itr = Waste_list.end();
@@ -912,6 +922,7 @@ void BaseCard::CheckAddToReserveList(){
 		MovingCard_Itr--;
 		break;
 	}
+	//std::cout << "MoveItr指定fin";
 	//最寄りのカードのリストの最後をイテレータ指定
 	switch (ListNum) {
 	case eNum_ReserveOpen0:
@@ -936,11 +947,17 @@ void BaseCard::CheckAddToReserveList(){
 		SearchCard_Itr = Reserve_listOpen6.end();
 		break;
 	}
+	//std::cout << "SearchItr指定fin";
 	//調べるカードのイテレータ
 	SearchCard_Itr--;
+	//std::cout << "SearchItr--"<<std::endl;
+	//std::cout << "SearchPointer=ListNum" << *SearchCard_Itr << " ";
+	//std::cout << "MovePointer=MovingLane" << *MovingCard_Itr << std::endl;
 	//重ねられるカードの場合
-	if (*SearchCard_Itr + 12 == *MovingCard_Itr || *SearchCard_Itr + 38 == *MovingCard_Itr || 
-		*SearchCard_Itr - 14 == *MovingCard_Itr || *SearchCard_Itr - 40 == *MovingCard_Itr) {
+	if (( * SearchCard_Itr + 12 == *MovingCard_Itr || *SearchCard_Itr + 38 == *MovingCard_Itr ||
+		*SearchCard_Itr - 14 == *MovingCard_Itr || *SearchCard_Itr - 40 == *MovingCard_Itr) && (*SearchCard_Itr != 0 && *SearchCard_Itr != 13 && *SearchCard_Itr != 26 && *SearchCard_Itr != 39)) {
+		AddToMoved_Log(MovingLane,*MovingCard_Itr,ListNum,*SearchCard_Itr);
+		//std::cout << "IfItr参照fin";
 		//動かすカードがreserve_openのカードの場合、
 		switch (MovingLane) {
 		case eNum_ReserveOpen0:
@@ -956,7 +973,9 @@ void BaseCard::CheckAddToReserveList(){
 				if (CheckListSize(MovingLane) >= 2) {
 					MovingCard_Itr++;
 				}
+				//std::cout << "DeleteNow";
 				DeleteListFront(MovingLane);
+				//std::cout << "Deletefin";
 				if (EmptyOrNotTheList(MovingLane)) {
 					break;
 				}
@@ -970,8 +989,10 @@ void BaseCard::CheckAddToReserveList(){
 			//foundationリストから動かす場合。
 			//移動先のリストに追加
 			AddToListend(ListNum, *MovingCard_Itr);
+			//std::cout << "DeleteendNow";
 			//動いてるカードのリストを削除
 			RemoveFromListend(MovingLane);
+			//std::cout << "DeleteendFin";
 			//１枚の場合の処理しか書いてないため、複数枚動かすとまともに動かない
 			break;
 		}
@@ -1031,18 +1052,22 @@ void BaseCard::CheckAddToFoundationList() {
 	if (*MovingCard_Itr == 0 || *MovingCard_Itr == 13 || *MovingCard_Itr == 26 || *MovingCard_Itr == 39) {
 		//リストにデータ入力
 		if (*MovingCard_Itr == 0) {
+			AddToMoved_Log(MovingLane, *MovingCard_Itr, eNum_Foundation0, 0);
 			Foundation_list0.push_front(*MovingCard_Itr);
 			CardMoving = false;
 		}
 		else if (*MovingCard_Itr == 13) {
+			AddToMoved_Log(MovingLane, *MovingCard_Itr, eNum_Foundation1, 0);
 			Foundation_list1.push_front(*MovingCard_Itr);
 			CardMoving = false;
 		}
 		else if (*MovingCard_Itr == 26) {
+			AddToMoved_Log(MovingLane, *MovingCard_Itr, eNum_Foundation2, 0);
 			Foundation_list2.push_front(*MovingCard_Itr);
 			CardMoving = false;
 		}
 		else if (*MovingCard_Itr == 39) {
+			AddToMoved_Log(MovingLane, *MovingCard_Itr, eNum_Foundation3, 0);
 			Foundation_list3.push_front(*MovingCard_Itr);
 			CardMoving = false;
 		}
@@ -1057,6 +1082,7 @@ void BaseCard::CheckAddToFoundationList() {
 			SearchCard_Itr--;
 			//Movinglaneの最後のカードのポインタがいずれかのfoundationListのポインタ＋１だったら移動
 			if (*SearchCard_Itr + 1 == *MovingCard_Itr) {
+				AddToMoved_Log(MovingLane, *MovingCard_Itr, eNum_Foundation0, *SearchCard_Itr);
 				Foundation_list0.push_back(*MovingCard_Itr);
 				RemoveFromListend(MovingLane);
 				CardMoving = false;
@@ -1066,6 +1092,7 @@ void BaseCard::CheckAddToFoundationList() {
 			SearchCard_Itr = Foundation_list1.end();
 			SearchCard_Itr--;
 			if (*SearchCard_Itr + 1 == *MovingCard_Itr) {
+				AddToMoved_Log(MovingLane, *MovingCard_Itr, eNum_Foundation1, *SearchCard_Itr);
 				Foundation_list1.push_back(*MovingCard_Itr);
 				RemoveFromListend(MovingLane);
 				CardMoving = false;
@@ -1075,6 +1102,7 @@ void BaseCard::CheckAddToFoundationList() {
 			SearchCard_Itr = Foundation_list2.end();
 			SearchCard_Itr--;
 			if (*SearchCard_Itr + 1 == *MovingCard_Itr) {
+				AddToMoved_Log(MovingLane, *MovingCard_Itr, eNum_Foundation2, *SearchCard_Itr);
 				Foundation_list2.push_back(*MovingCard_Itr);
 				RemoveFromListend(MovingLane);
 				CardMoving = false;
@@ -1084,6 +1112,7 @@ void BaseCard::CheckAddToFoundationList() {
 			SearchCard_Itr = Foundation_list3.end();
 			SearchCard_Itr--;
 			if (*SearchCard_Itr + 1 == *MovingCard_Itr) {
+				AddToMoved_Log(MovingLane, *MovingCard_Itr, eNum_Foundation3, *SearchCard_Itr);
 				Foundation_list3.push_back(*MovingCard_Itr);
 				RemoveFromListend(MovingLane);
 				CardMoving = false;
@@ -1304,6 +1333,7 @@ void BaseCard::MoveIfK() {
 	}
 	//Kの場合
 	if (*Itr == 12 || *Itr == 25 || *Itr == 38 || *Itr == 51) {
+		AddToMoved_Log(MovingLane, *Itr, ListNum, 0);
 		//movingLaneからListNumへ、要素の中身をすべて移動
 		switch (MovingLane) {
 		case eNum_ReserveOpen0:
@@ -1376,36 +1406,147 @@ void BaseCard::NormalMode() {
 	}
 }
 void BaseCard::AutoMode() {
+	InsideOrOutsideTheCard();
 	//ListNumとmovingレーンを１つずつたしかめる
 	for (int i = eNum_Waste; i <= eNum_ReserveOpen6; i++) {
 		MovingLane = i;
-		BothStockAndWaste();
+		if (MovingLane == eNum_Waste) {
+			BothStockAndWaste();
+		}
 		if ((eNum_Reserve0 <= i && eNum_Reserve6 >= i)|| EmptyOrNotTheList(MovingLane)) {
-			std::cout << MovingLane << ": continue" << std::endl;
+			//std::cout << MovingLane << ": continue" << std::endl;
 			continue;
 		}
 		//BothStockAndWaste();
 		//for (auto const& i : Waste_list) {
 		//	std::cout << "," << i<<std::endl;
 		//}
-		std::cout<<"MovingLane" << MovingLane << ":" << CheckListSize(MovingLane) << ":" << EmptyOrNotTheList(MovingLane) << std::endl;
+		//std::cout<<"MovingLane" << MovingLane << ":" << CheckListSize(MovingLane) << ":" << EmptyOrNotTheList(MovingLane) << std::endl;
 		for (int k = eNum_Foundation0; k <= eNum_Foundation3; k++) {
 			ListNum = k;
-			std::cout <<"ListNum"<< ListNum << ":" << CheckListSize(ListNum) << ":" << EmptyOrNotTheList(ListNum) << std::endl;
+			//std::cout << "ListNum" << ListNum << ":" << CheckListSize(ListNum) << ":" << EmptyOrNotTheList(ListNum) << std::endl;
 			CheckAddToFoundationList();
+			OpenListCheckAndAdd();
+			if (EmptyOrNotTheList(MovingLane)) {
+				break;
+			}
+		}
+		if (EmptyOrNotTheList(MovingLane)) {
+			break;
+		}
+		for (int k = eNum_ReserveOpen0; k <= eNum_ReserveOpen6; k++) {
+			ListNum = k;
+			//std::cout << "ListNum" << ListNum << ":" << CheckListSize(ListNum) << ":" << EmptyOrNotTheList(ListNum) << std::endl;
 			//先のリストが空白の場合
 			if (EmptyOrNotTheList(ListNum)) {
 				//動かしてるリストの一番最初のカードがKの場合、
 				//置ける
+				//std::cout << "NoCheckfin";
 				MoveIfK();
+				//std::cout << "NoCheck"<<std::endl;
 			}
 			//先のリストが空白じゃない場合
 			else if (!EmptyOrNotTheList(ListNum)) {
+				//std::cout << "Check";
+
 				CheckAddToReserveList();
+				//std::cout << "Checkfin"<<std::endl;
 			}
+			//std::cout << "Open";
 			OpenListCheckAndAdd();
+			//std::cout << "Openfin" << std::endl;
+			/*std::cout << std::endl << "Stock :";
+			for (auto const& i : Stock_list) {
+				std::cout << "," << i;
+			}
+			std::cout << std::endl << "Waste :";
+			for (auto const& i : Waste_list) {
+				std::cout << "," << i;
+			}
+			std::cout << std::endl << " Reserve_list0 :";
+			for (auto const& i : Reserve_list0) {
+				std::cout << "," << i;
+			}
+			std::cout << std::endl << " Reserve_list1 :";
+			for (auto const& i : Reserve_list1) {
+				std::cout << "," << i;
+			}
+			std::cout << std::endl << " Reserve_list2 :";
+			for (auto const& i : Reserve_list2) {
+				std::cout << "," << i;
+			}
+			std::cout << std::endl << " Reserve_list3 :";
+			for (auto const& i : Reserve_list3) {
+				std::cout << "," << i;
+			}
+			std::cout << std::endl << " Reserve_list4 :";
+			for (auto const& i : Reserve_list4) {
+				std::cout << "," << i;
+			}
+			std::cout << std::endl << " Reserve_list5 :";
+			for (auto const& i : Reserve_list5) {
+				std::cout << "," << i;
+			}
+			std::cout << std::endl << " Reserve_list6 :";
+			for (auto const& i : Reserve_list6) {
+				std::cout << "," << i;
+			}
+			std::cout << std::endl << " Reserve_listOpen0 :";
+			for (auto const& i : Reserve_listOpen0) {
+				std::cout << "," << i;
+			}
+			std::cout << std::endl << " Reserve_listOpen1 :";
+			for (auto const& i : Reserve_listOpen1) {
+				std::cout << "," << i;
+			}
+			std::cout << std::endl << " Reserve_listOpen2 :";
+			for (auto const& i : Reserve_listOpen2) {
+				std::cout << "," << i;
+			}
+			std::cout << std::endl << " Reserve_listOpen3 :";
+			for (auto const& i : Reserve_listOpen3) {
+				std::cout << "," << i;
+			}
+			std::cout << std::endl << " Reserve_listOpen4 :";
+			for (auto const& i : Reserve_listOpen4) {
+				std::cout << "," << i;
+			}
+			std::cout << std::endl << " Reserve_listOpen5 :";
+			for (auto const& i : Reserve_listOpen5) {
+				std::cout << "," << i;
+			}
+			std::cout << std::endl << " Reserve_listOpen6 :";
+			for (auto const& i : Reserve_listOpen6) {
+				std::cout << "," << i;
+			}
+			std::cout << std::endl << " Foundation_list0 :";
+			for (auto const& i : Foundation_list0) {
+				std::cout << "," << i;
+			}
+			std::cout << std::endl << " Foundation_list1 :";
+			for (auto const& i : Foundation_list1) {
+				std::cout << "," << i;
+			}
+			std::cout << std::endl << " Foundation_list2 :";
+			for (auto const& i : Foundation_list2) {
+				std::cout << "," << i;
+			}
+			std::cout << std::endl << " Foundation_list3 :" << std::endl;
+			for (auto const& i : Foundation_list3) {
+				std::cout << "," << i;
+			}*/
+			if (EmptyOrNotTheList(MovingLane)) {
+				break;
+			}
 		}
 	}
+	//ゲームクリアの場合もloop判定になっている。
+	//それを除いてリスタートの処理に変更
+	if (ClearOrNot() == false) {
+		ReStartGame(LoopOrNot());
+	}
+	//もし、同じ作業を5回以上繰り返している場合、動いてない場合、最初からやり直す
+	//動かしたカード：動かした先の列名を見ての処理？
 }
 bool BaseCard::CheckReserveEmpty() {
 	if (EmptyOrNotTheList(eNum_Reserve0) &&
@@ -1420,4 +1561,148 @@ bool BaseCard::CheckReserveEmpty() {
 	else {
 		return false;
 	}
+}
+void BaseCard::AddToMoved_Log(int BeforeList, int Beforeard, int afterList, int afterCard) {
+	//動かすカード、リスト、(あれば、動かす先のカード)、リスト
+	//リスト：動かすカード：リスト：動かす先のカード
+	int addnum = BeforeList * 100000 + Beforeard * 10000 + afterList * 100 + afterCard;
+	Moved_Log.push_back(addnum);
+	if (Moved_Log.size() >= 500) {
+		Moved_Log.pop_front();
+	}
+}
+bool BaseCard::LoopOrNot() {
+	if (Moved_Log.size() == 0) {
+		return false;
+	}
+	int Max = Moved_Log.size();
+	auto ChoiceItr = Moved_Log.begin();
+	auto Sortitr = Moved_Log.begin();
+	int ChoiceItrCount = 0;
+	int SortItrCount = 0;
+	//１度同じ動きがある場合
+	bool finish = false;
+	//現状ループが続いてる場合。
+	bool CorrectNow = false;
+	//チェック中のカウント
+	int CheckCount = 0;
+	//同じのが見つかったら何度続くか確かめる
+	int LoopCount = 0;
+	//ループのチェックするポイントの数字を指定
+	int PointNum;
+	do{
+		//まず、同じのを探す
+		while (ChoiceItrCount < Max && ChoiceItrCount < 200) {
+			//ソートの方の条件
+			for (int SortItrCount = 0; SortItrCount < Max; SortItrCount++) {
+				if (*ChoiceItr == *Sortitr) {
+					//同じだったら、itrとカウントを増やしてループ抜ける
+					ChoiceItr++;
+					ChoiceItrCount++;
+					finish = true;
+					break;
+				}
+				else {
+					//この場合、trueになるか、終わるまで実行し続ける
+					Sortitr++;
+					SortItrCount++;
+				}
+			}
+			//同じ動きが見つかっているなら、ループ抜ける
+			if (finish==true) {
+				break;
+			}
+			ChoiceItr++;
+			ChoiceItrCount++;
+			//選ぶ方のイテレータが200超えたら終わる
+			if (ChoiceItrCount >= 200) {
+				return false;
+			}
+		}
+		//finishがfalseの場合、全くループしていないのでreturn;
+		if (finish==false) {
+			return false;
+		}
+		//この数字がもう1度来たら＝同じ動きをしたらループとする。
+		PointNum = *ChoiceItr;
+		do {
+			if (*ChoiceItr = *Sortitr) {
+				//同じ数字を繰り返してる数を数える。
+				CheckCount++;
+				//同じ数字の数で、ループの数を数える
+				if (PointNum == *Sortitr) {
+					LoopCount++;
+				}
+				else {
+					//ループの指定先を間違えている場合は、回数とポイントの初期化
+					PointNum == *ChoiceItr;
+					LoopCount = 0;
+				}
+				//イテレータを進める
+				ChoiceItr++;
+				Sortitr++;
+				//イテレータのカウントを増やす
+				ChoiceItrCount++;
+				SortItrCount++;
+				//ループが続いてるからtrue
+				CorrectNow = true;
+			}
+			else {
+				//ループ終わりだからfalse
+				CorrectNow = false;
+			}
+		} while (ChoiceItrCount < Max && SortItrCount < Max && CorrectNow == true);
+		//CorrectNow = false;の場合、最初に戻る
+	} while (CorrectNow==false);
+	//最後までループが続いてる場合；
+	if (CorrectNow = true) {
+		//続いてる区間の指定
+		if (LoopCount >= 5 && CheckCount>=200) {
+			return true;
+		}
+	}
+	return false;
+	//この関数のあと、リスタートのコードを書く
+}
+void BaseCard::ReStartGame(bool NewGame) {
+	//std::cout <<"TrueOrFalse: " << NewGame << std::endl;
+	if (NewGame==false) {
+		//std::cout << "return" << std::endl;
+		return;
+	}
+	//std::cout << "Restart" << std::endl;
+	//リストをオールクリア
+	Stock_list.clear();
+	Waste_list.clear();
+	Reserve_list0.clear();
+	Reserve_list1.clear();
+	Reserve_list2.clear();
+	Reserve_list3.clear();
+	Reserve_list4.clear();
+	Reserve_list5.clear();
+	Reserve_list6.clear();
+	Reserve_listOpen0.clear();
+	Reserve_listOpen1.clear();
+	Reserve_listOpen2.clear();
+	Reserve_listOpen3.clear();
+	Reserve_listOpen4.clear();
+	Reserve_listOpen5.clear();
+	Reserve_listOpen6.clear(); 
+	Foundation_list0.clear();
+	Foundation_list1.clear();
+	Foundation_list2.clear();
+	Foundation_list3.clear(); 
+	Moved_Log.clear(); 
+	Remaining_list.clear();
+	//カードを初期位置へ配置
+	Remaining_list = AllCard_list;
+	CardListSet();
+}
+bool BaseCard::ClearOrNot(){
+	//もし、すべてのfoundationリストに13枚のカードがあったらtrue;
+	if (Foundation_list0.size() == 13 && Foundation_list1.size() == 13 &&
+		Foundation_list2.size() == 13 && Foundation_list3.size() == 13) {
+		return true;
+	}
+	return false;
 }

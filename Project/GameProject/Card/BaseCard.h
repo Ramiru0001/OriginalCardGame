@@ -84,6 +84,7 @@ public:
 	std::list<int> Foundation_list1;//左上の組札。左から2番め
 	std::list<int> Foundation_list2;//左上の組札。左から3番目
 	std::list<int> Foundation_list3;//左上の組札。左から4番目
+	std::list<int> Moved_Log;//ログ
 	CImage heart[14];//ハートの赤
 	CImage diamond[14];//ダイヤの赤
 	CImage club[14];//クローバーの黒
@@ -136,6 +137,14 @@ public:
 	void NormalMode();
 	//Autoモード
 	void AutoMode();
+	//ログを追加する
+	void AddToMoved_Log(int BeforeList,int Beforeard,int afterList,int afterCard);
 	//すべてのreserveリストが空白ならtrue;
 	bool CheckReserveEmpty();
+	//ループしてたらtrueを返す
+	bool LoopOrNot();
+	//すべてのリストを初期化してカードを再配置
+	void ReStartGame(bool);
+	//クリアかどうかの判定
+	bool ClearOrNot();
 };
