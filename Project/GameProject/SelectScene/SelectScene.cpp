@@ -1,15 +1,20 @@
 #include "SelectScene.h"
-#include "../Settings.h"
+#include "../FreeNum.h"
+#include "../Card/BaseCard.h"
+#include <iostream>
 
 SelectScene::SelectScene():Base(eType_Scene)
 ,title_text("C:\\Windows\\Fonts\\msgothic.ttc", 64)
 ,select_title_text("C:\\Windows\\Fonts\\msgothic.ttc", 80) {
-	ShareNum::GameNum = 0;
+	FreeNum::GameNum = 0;
+}
+SelectScene::~SelectScene() {
+	//Base::KillAll();
 }
 void SelectScene::Draw() {
 	//選択中のタイトルを大きく表示
-	for (int i = 0; i < ShareNum::MaxGame; i++) {
-		if (ShareNum::GameNum != i) {
+	for (int i = 0; i < FreeNum::MaxGame; i++) {
+		if (FreeNum::GameNum != i) {
 			title_text.Draw(274, 214 + i * 150, 0, 0, 0, game_title[i]);
 		}
 		else {
@@ -18,21 +23,29 @@ void SelectScene::Draw() {
 	}
 }
 void SelectScene::Update() {
+	//std::cout << "SelectScene" << std::endl;
+	//std::cout << Base::m_list.size()<<std::endl;
 	if (PUSH(CInput::eUp)) {
-		if (ShareNum::GameNum > 0) {
-			ShareNum::GameNum--;
+		if (FreeNum::GameNum > 0) {
+			FreeNum::GameNum--;
 		}
 	}
 	if (PUSH(CInput::eDown)) {
-		if (ShareNum::GameNum < ShareNum::MaxGame - 1) {
-			ShareNum::GameNum++;
+		if (FreeNum::GameNum < FreeNum::MaxGame - 1) {
+			FreeNum::GameNum++;
 		}
 	}
 	if (PUSH(CInput::eButton10)) {
 		Base::KillAll();
-		switch (ShareNum::GameNum) {
-		case eState_GameTitle:
-			//Base::Add(new ミニゲームのクラス);
+		switch (FreeNum::GameNum) {
+		case eState_Normal:
+			Base::Add(new BaseCard(eState_Normal));
+			break;
+		case eState_Random:
+			Base::Add(new BaseCard(eState_Random));
+			break;
+		case eState_Auto:
+			Base::Add(new BaseCard(eState_Auto));
 			break;
 		}
 	}

@@ -8,23 +8,21 @@
 std::random_device rnd;
 std::default_random_engine eng(rnd());
 //カードを引いたときに呼ばれる。
-BaseCard::BaseCard():Base(eType_Card){
-	SelectMode = eState_Normal;
+BaseCard::BaseCard(int GameMode):Base(eType_Card){
+	SelectMode = GameMode;
 	ImageSet();
 	CardListSet();
-	SelectMode=1;
 }
 BaseCard::~BaseCard() {
 }
 void BaseCard::Update() {
 	MousePos = CInput::GetMousePoint();
-	//すべてのreserveリストのカードが無くなったら、
-	if (CheckReserveEmpty()) {
-		SelectMode = eState_Auto;
-	}
 	switch (SelectMode) {
 	case eState_Normal:
 		NormalMode();
+		break;
+	case eState_Random:
+		RandomMode();
 		break;
 	case eState_Auto:
 		AutoMode();
@@ -61,81 +59,129 @@ void BaseCard::Draw() {
 	MovingCardDraw();
 }
 void BaseCard::CardListSet() {
-	//std::cout << Remaining_list.size() << std::endl;
-	while (!Remaining_list.empty()) {
-		//std::cout << Remaining_list.size() << std::endl;
-		//残っているカードの数
-		int RemainingCard_num = Remaining_list.size();
-		//残っているカードの数の中で、乱数を生成する関数を作成。
-		std::uniform_int_distribution<int> CardRan(0, RemainingCard_num - 1);
-		//Itrは、リストのN番目を指す。最初の要素を入れる
-		auto Itr = Remaining_list.begin();
-		//CardRan(eng)番目の要素を取得。Itrのポインタがその数字
-		std::advance(Itr, CardRan(eng));
-		//次に処理するカードの数字
-		int NextProcessCardNum = *Itr;
-		//Remaining_listから、使用した値を削除
-		Remaining_list.remove(NextProcessCardNum);
-		//カードの数字を各リストに入れる
-		switch (RemainingCard_num) {
-		case 52:
-			Reserve_listOpen0.push_front(NextProcessCardNum);
+	switch (SelectMode) {
+		case eState_Random:
+		case eState_Auto:
+			//std::cout << Remaining_list.size() << std::endl;
+			while (!Remaining_list.empty()) {
+				//std::cout << Remaining_list.size() << std::endl;
+				//残っているカードの数
+				int RemainingCard_num = Remaining_list.size();
+				//残っているカードの数の中で、乱数を生成する関数を作成。
+				std::uniform_int_distribution<int> CardRan(0, RemainingCard_num - 1);
+				//Itrは、リストのN番目を指す。最初の要素を入れる
+				auto Itr = Remaining_list.begin();
+				//CardRan(eng)番目の要素を取得。Itrのポインタがその数字
+				std::advance(Itr, CardRan(eng));
+				//次に処理するカードの数字
+				int NextProcessCardNum = *Itr;
+				//Remaining_listから、使用した値を削除
+				Remaining_list.remove(NextProcessCardNum);
+				//カードの数字を各リストに入れる
+				switch (RemainingCard_num) {
+				case 52:
+					Reserve_listOpen0.push_front(NextProcessCardNum);
+					break;
+				case 51:
+					Reserve_listOpen1.push_front(NextProcessCardNum);
+					break;
+				case 50:
+					Reserve_list1.push_front(NextProcessCardNum);
+					break;
+				case 49:
+					Reserve_listOpen2.push_front(NextProcessCardNum);
+					break;
+				case 48:
+				case 47:
+					Reserve_list2.push_front(NextProcessCardNum);
+					break;
+				case 46:
+					Reserve_listOpen3.push_front(NextProcessCardNum);
+					break;
+				case 45:
+				case 44:
+				case 43:
+					Reserve_list3.push_front(NextProcessCardNum);
+					break;
+				case 42:
+					Reserve_listOpen4.push_front(NextProcessCardNum);
+					break;
+				case 41:
+				case 40:
+				case 39:
+				case 38:
+					Reserve_list4.push_front(NextProcessCardNum);
+					break;
+				case 37:
+					Reserve_listOpen5.push_front(NextProcessCardNum);
+					break;
+				case 36:
+				case 35:
+				case 34:
+				case 33:
+				case 32:
+					Reserve_list5.push_front(NextProcessCardNum);
+					break;
+				case 31:
+					Reserve_listOpen6.push_front(NextProcessCardNum);
+					break;
+				case 30:
+				case 29:
+				case 28:
+				case 27:
+				case 26:
+				case 25:
+					Reserve_list6.push_front(NextProcessCardNum);
+					break;
+				default:
+					Stock_list.push_front(NextProcessCardNum);
+					break;
+				}
+			}
 			break;
-		case 51:
-			Reserve_listOpen1.push_front(NextProcessCardNum);
+		case eState_Normal:
+			while (!Remaining_list.empty()) {
+				//std::cout << Remaining_list.size() << std::endl;
+				//残ってるカードリストの中で乱数
+				std::uniform_int_distribution<int> CardRan(0, Empty_list.size() - 1);
+				//Itrは、リストのN番目を指す。最初の要素を入れる
+				auto RemainingItr = Remaining_list.begin();
+				auto EmptyItr = Empty_list.begin();
+				//入れるリストの数字を入手
+				std::advance(EmptyItr, CardRan(eng));
+				//次に追加するリストの数字を入手
+				int AddListNum = *RemainingItr;
+				//Remaining_listの最初の数字を削除
+				Remaining_list.pop_front();
+				//カードの数字を各リストに入れる
+				switch (AddListNum) {
+				case eNum_Reserve0:
+					Reserve_list0.push_front(*EmptyItr);
+					break;
+				case eNum_Reserve1:
+					Reserve_list1.push_front(*EmptyItr);
+					break;
+				case eNum_Reserve2:
+					Reserve_list2.push_front(*EmptyItr);
+					break;
+				case eNum_Reserve3:
+					Reserve_list3.push_front(*EmptyItr);
+					break;
+				case eNum_Reserve4:
+					Reserve_list4.push_front(*EmptyItr);
+					break;
+				case eNum_Reserve5:
+					Reserve_list5.push_front(*EmptyItr);
+					break;
+				case eNum_Reserve6:
+					Reserve_list6.push_front(*EmptyItr);
+					break;
+				case eNum_Waste:
+					Waste_list.push_front(*EmptyItr);
+
+				}
+			}
 			break;
-		case 50:
-			Reserve_list1.push_front(NextProcessCardNum);
-			break;
-		case 49:
-			Reserve_listOpen2.push_front(NextProcessCardNum);
-			break;
-		case 48:
-		case 47:
-			Reserve_list2.push_front(NextProcessCardNum);
-			break;
-		case 46:
-			Reserve_listOpen3.push_front(NextProcessCardNum);
-			break;
-		case 45:
-		case 44:
-		case 43:
-			Reserve_list3.push_front(NextProcessCardNum);
-			break;
-		case 42:
-			Reserve_listOpen4.push_front(NextProcessCardNum);
-			break;
-		case 41:
-		case 40:
-		case 39:
-		case 38:
-			Reserve_list4.push_front(NextProcessCardNum);
-			break;
-		case 37:
-			Reserve_listOpen5.push_front(NextProcessCardNum);
-			break;
-		case 36:
-		case 35:
-		case 34:
-		case 33:
-		case 32:
-			Reserve_list5.push_front(NextProcessCardNum);
-			break;
-		case 31:
-			Reserve_listOpen6.push_front(NextProcessCardNum);
-			break;
-		case 30:
-		case 29:
-		case 28:
-		case 27:
-		case 26:
-		case 25:
-			Reserve_list6.push_front(NextProcessCardNum);
-			break;
-		default:
-			Stock_list.push_front(NextProcessCardNum);
-			break;
-		}
 	}
 	//std::cout << Remaining_list.size() << std::endl;
 	/*std::cout << "Stock :";
@@ -1367,43 +1413,27 @@ void BaseCard::MoveIfK() {
 	}
 }
 void BaseCard::NormalMode() {
+	//すべてのreserveリストのカードが無くなったら、
+	if (CheckReserveEmpty()) {
+		SelectMode = eState_Auto;
+	}
 	//動かせるカードの上にマウスがあるかどうか
 	//ある場合,	MouseOverCard=trueにする、ListNumを更新する。
 	InsideOrOutsideTheCard();
-	//リスト操作
-	//左クリックしたとき、動かせるカードの上にマウスがあった場合。
-	if (PUSH(CInput::eMouseL) && MouseOverCard) {
-		//ListNumを使って、そのカードの座標を変更。
-		MovingLane = ListNum;
-		CardMoving = true;
-		//マウスが、wasteリストかreserveリストのうえにある場合
-		if (MouseOverReserveAndWasteLists == true) {
-			CheckAddToFoundationList();
-		}
+	//ユーザー操作に対する処理
+	UserOperation();
+}
+void BaseCard::RandomMode() {
+	//すべてのreserveリストのカードが無くなったら、
+	if (CheckReserveEmpty()) {
+		SelectMode = eState_Auto;
 	}
-	//マウスを離したとき、マウスがreserveリストの上にある場合
-	if (PULL(CInput::eMouseL) && MouseOverReserve) {
-		//マウスの下のリストが空白でかつ、動かしてるカードのリストが空白じゃない場合
-		if (!EmptyOrNotTheList(MovingLane) && EmptyOrNotTheList(ListNum)) {
-			//動かしてるリストの一番最初のカードがKの場合、
-			//置ける
-			MoveIfK();
-		}
-		//マウスの下のリストと動かしてるリストの両方が空白じゃない場合
-		else if (!EmptyOrNotTheList(MovingLane) || !EmptyOrNotTheList(ListNum)) {
-			CheckAddToReserveList();
-		}
-	}
-	//もし、openのリストに何もなければ、１枚移動する。
-	OpenListCheckAndAdd();
-	if (FREE(CInput::eMouseL)) {
-		CardMoving = false;
-	}
-	//マウスが、stockリストのなかにあれば
-	//左キーを押したときに、ストックリストからwasteListに移動
-	if (PUSH(CInput::eLeft) || (MouseOverStockList && PUSH(CInput::eMouseL))) {
-		BothStockAndWaste();
-	}
+	//動かせるカードの上にマウスがあるかどうか
+	//ある場合,	MouseOverCard=trueにする、ListNumを更新する。
+	InsideOrOutsideTheCard();
+	//ユーザー操作に対する処理
+	UserOperation();
+	
 }
 void BaseCard::AutoMode() {
 	InsideOrOutsideTheCard();
@@ -1705,4 +1735,67 @@ bool BaseCard::ClearOrNot(){
 		return true;
 	}
 	return false;
+}
+void BaseCard::UserOperation() {
+	//リスト操作
+	//左クリックしたとき、動かせるカードの上にマウスがあった場合。
+	if (PUSH(CInput::eMouseL) && MouseOverCard) {
+		//ListNumを使って、そのカードの座標を変更。
+		MovingLane = ListNum;
+		CardMoving = true;
+		//マウスが、wasteリストかreserveリストのうえにある場合
+		if (MouseOverReserveAndWasteLists == true) {
+			CheckAddToFoundationList();
+		}
+	}
+	//マウスを離したとき、マウスがreserveリストの上にある場合
+	if (PULL(CInput::eMouseL) && MouseOverReserve) {
+		//マウスの下のリストが空白でかつ、動かしてるカードのリストが空白じゃない場合
+		if (!EmptyOrNotTheList(MovingLane) && EmptyOrNotTheList(ListNum)) {
+			//動かしてるリストの一番最初のカードがKの場合、
+			//置ける
+			MoveIfK();
+		}
+		//マウスの下のリストと動かしてるリストの両方が空白じゃない場合
+		else if (!EmptyOrNotTheList(MovingLane) || !EmptyOrNotTheList(ListNum)) {
+			CheckAddToReserveList();
+		}
+	}
+	//もし、openのリストに何もなければ、１枚移動する。
+	OpenListCheckAndAdd();
+	if (FREE(CInput::eMouseL)) {
+		CardMoving = false;
+	}
+	//マウスが、stockリストのなかにあれば
+	//左キーを押したときに、ストックリストからwasteListに移動
+	if (PUSH(CInput::eLeft) || (MouseOverStockList && PUSH(CInput::eMouseL))) {
+		BothStockAndWaste();
+	}
+}
+void BaseCard::AddEmptyList() {
+	Empty_list.clear();
+	if (Reserve_list0.size() < 1) {
+		Empty_list.push_back(eNum_Reserve0);
+	}
+	if (Reserve_list1.size() < 2) {
+		Empty_list.push_back(eNum_Reserve1);
+	}
+	if (Reserve_list2.size() < 3) {
+		Empty_list.push_back(eNum_Reserve2);
+	}
+	if (Reserve_list3.size() < 4) {
+		Empty_list.push_back(eNum_Reserve3);
+	}
+	if (Reserve_list4.size() < 5) {
+		Empty_list.push_back(eNum_Reserve4);
+	}
+	if (Reserve_list5.size() < 6) {
+		Empty_list.push_back(eNum_Reserve5);
+	}
+	if (Reserve_list6.size() < 7) {
+		Empty_list.push_back(eNum_Reserve6);
+	}
+	if (Stock_list.size() < 24) {
+		Empty_list.push_back(eNum_stock);
+	}
 }

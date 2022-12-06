@@ -1,6 +1,7 @@
 #include <GLLibrary.h>
 #include "Task/TaskManager.h"
 #include "Base/Base.h"
+#include "SelectScene/SelectScene.h"
 #include "Card/BaseCard.h"
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
@@ -18,6 +19,7 @@ void MainLoop(void) {
 	//TaskManager::Instance()->Update();
 	// タスクマネージャー描画処理
 	//TaskManager::Instance()->Draw();
+	Base::CheckKillAll();
 	Base::UpdateAll();
 	Base::DrawAll();
 }
@@ -93,7 +95,7 @@ void Init(void)
 	//Base::Add(new Title());
 	ADD_RESOURCE("TrumpCard", CImage::CreateImage("Image/TrumpCard.png"));
 	ADD_RESOURCE("TrumpBehind", CImage::CreateImage("Image/TrumpCardBehind.png"));
-	Base::Add(new BaseCard());
+	Base::Add(new SelectScene());
 }
 void Release()
 {

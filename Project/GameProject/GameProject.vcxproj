@@ -13,15 +13,15 @@
   <ItemGroup>
     <ClCompile Include="Base\Base.cpp" />
     <ClCompile Include="Card\BaseCard.cpp" />
+    <ClCompile Include="FreeNum.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SelectScene\SelectScene.cpp" />
-    <ClCompile Include="Settings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base\Base.h" />
     <ClInclude Include="Card\BaseCard.h" />
+    <ClInclude Include="FreeNum.h" />
     <ClInclude Include="SelectScene\SelectScene.h" />
-    <ClInclude Include="Settings.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FE2CE3B1-49BF-46A5-9DB1-9BD5B52FE1A0}</ProjectGuid>

@@ -7,6 +7,7 @@ public:
 	//現在のゲーム設定
 	enum {
 		eState_Normal,
+		eState_Random,
 		eState_Auto,
 	};
 	//リストナンバー
@@ -85,6 +86,7 @@ public:
 	std::list<int> Foundation_list2;//左上の組札。左から3番目
 	std::list<int> Foundation_list3;//左上の組札。左から4番目
 	std::list<int> Moved_Log;//ログ
+	std::list<int> Empty_list;//カード配置時、空白のリストを入れる
 	CImage heart[14];//ハートの赤
 	CImage diamond[14];//ダイヤの赤
 	CImage club[14];//クローバーの黒
@@ -93,7 +95,7 @@ public:
 	CImage m_img;//選択中の画像。Temp
 	CVector2D MousePos;
 public:
-	BaseCard();
+	BaseCard(int GameMode);
 	~BaseCard();
 	//コピー、切り取り、サイズ指定、CardNum指定。初期設定
 	void ImageSet();
@@ -133,8 +135,10 @@ public:
 	int CheckListSize(int ListNum);
 	//もしKのカードなら、移動可能
 	void MoveIfK();
-	//通常モード
+	//通常モード。小さい方から順に配置していくモード。クリアできる可能性が高い
 	void NormalMode();
+	//ランダムモード。完全ランダム配置。クリア可能か不明
+	void RandomMode();
 	//Autoモード
 	void AutoMode();
 	//ログを追加する
@@ -147,4 +151,8 @@ public:
 	void ReStartGame(bool);
 	//クリアかどうかの判定
 	bool ClearOrNot();
+	//ユーザー操作に対する処理。
+	void UserOperation();
+	//カード配置時、空きのあるリストを調べる
+	void AddEmptyList();
 };

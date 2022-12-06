@@ -11,7 +11,7 @@
     <ClCompile Include="SelectScene\SelectScene.cpp">
       <Filter>SelectScene</Filter>
     </ClCompile>
-    <ClCompile Include="Settings.cpp" />
+    <ClCompile Include="FreeNum.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Base">
@@ -37,6 +37,6 @@
     <ClInclude Include="SelectScene\SelectScene.h">
       <Filter>SelectScene</Filter>
     </ClInclude>
-    <ClInclude Include="Settings.h" />
+    <ClInclude Include="FreeNum.h" />
   </ItemGroup>
 </Project>
