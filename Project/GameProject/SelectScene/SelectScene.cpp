@@ -44,8 +44,8 @@ void SelectScene::Update() {
 		case eState_Random:
 			Base::Add(new BaseCard(eState_Random));
 			break;
-		case eState_Auto:
-			Base::Add(new BaseCard(eState_Auto));
+		case eState_Debug:
+			Base::Add(new BaseCard(eState_Debug));
 			break;
 		}
 	}

@@ -3,6 +3,8 @@
 #include <iostream>
 #include <random>
 #include <Gllibrary.h>
+#include <algorithm>
+#include <vector>
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
 std::random_device rnd;
@@ -10,6 +12,7 @@ std::default_random_engine eng(rnd());
 //カードを引いたときに呼ばれる。
 BaseCard::BaseCard(int GameMode):Base(eType_Card){
 	SelectMode = GameMode;
+	DebugMode_State = eState_Normal;
 	ImageSet();
 	CardListSet();
 }
@@ -23,6 +26,9 @@ void BaseCard::Update() {
 		break;
 	case eState_Random:
 		RandomMode();
+		break;
+	case eState_Debug:
+		DebugMode();
 		break;
 	case eState_Auto:
 		AutoMode();
@@ -60,167 +66,213 @@ void BaseCard::Draw() {
 }
 void BaseCard::CardListSet() {
 	switch (SelectMode) {
-		case eState_Random:
-		case eState_Auto:
+	case eState_Random:
+		//std::cout << Remaining_list.size() << std::endl;
+		while (!Remaining_list.empty()) {
 			//std::cout << Remaining_list.size() << std::endl;
-			while (!Remaining_list.empty()) {
-				//std::cout << Remaining_list.size() << std::endl;
-				//残っているカードの数
-				int RemainingCard_num = Remaining_list.size();
-				//残っているカードの数の中で、乱数を生成する関数を作成。
-				std::uniform_int_distribution<int> CardRan(0, RemainingCard_num - 1);
-				//Itrは、リストのN番目を指す。最初の要素を入れる
-				auto Itr = Remaining_list.begin();
-				//CardRan(eng)番目の要素を取得。Itrのポインタがその数字
-				std::advance(Itr, CardRan(eng));
-				//次に処理するカードの数字
-				int NextProcessCardNum = *Itr;
-				//Remaining_listから、使用した値を削除
-				Remaining_list.remove(NextProcessCardNum);
-				//カードの数字を各リストに入れる
-				switch (RemainingCard_num) {
-				case 52:
-					Reserve_listOpen0.push_front(NextProcessCardNum);
-					break;
-				case 51:
-					Reserve_listOpen1.push_front(NextProcessCardNum);
-					break;
-				case 50:
-					Reserve_list1.push_front(NextProcessCardNum);
-					break;
-				case 49:
-					Reserve_listOpen2.push_front(NextProcessCardNum);
-					break;
-				case 48:
-				case 47:
-					Reserve_list2.push_front(NextProcessCardNum);
-					break;
-				case 46:
-					Reserve_listOpen3.push_front(NextProcessCardNum);
-					break;
-				case 45:
-				case 44:
-				case 43:
-					Reserve_list3.push_front(NextProcessCardNum);
-					break;
-				case 42:
-					Reserve_listOpen4.push_front(NextProcessCardNum);
-					break;
-				case 41:
-				case 40:
-				case 39:
-				case 38:
-					Reserve_list4.push_front(NextProcessCardNum);
-					break;
-				case 37:
-					Reserve_listOpen5.push_front(NextProcessCardNum);
-					break;
-				case 36:
-				case 35:
-				case 34:
-				case 33:
-				case 32:
-					Reserve_list5.push_front(NextProcessCardNum);
-					break;
-				case 31:
-					Reserve_listOpen6.push_front(NextProcessCardNum);
-					break;
-				case 30:
-				case 29:
-				case 28:
-				case 27:
-				case 26:
-				case 25:
-					Reserve_list6.push_front(NextProcessCardNum);
-					break;
-				default:
-					Stock_list.push_front(NextProcessCardNum);
-					break;
-				}
-			}
-			break;
-		case eState_Normal:
-			while (!Remaining_list.empty()) {
-				//std::cout << Remaining_list.size() << std::endl;
-				//残ってるカードリストの中で乱数
-				std::uniform_int_distribution<int> CardRan(0, Empty_list.size() - 1);
-				//Itrは、リストのN番目を指す。最初の要素を入れる
-				auto RemainingItr = Remaining_list.begin();
-				auto EmptyItr = Empty_list.begin();
-				//入れるリストの数字を入手
-				std::advance(EmptyItr, CardRan(eng));
-				//次に追加するリストの数字を入手
-				int AddListNum = *RemainingItr;
-				//Remaining_listの最初の数字を削除
-				Remaining_list.pop_front();
-				//カードの数字を各リストに入れる
-				switch (AddListNum) {
-				case eNum_Reserve0:
-					Reserve_list0.push_front(*EmptyItr);
-					break;
-				case eNum_Reserve1:
-					Reserve_list1.push_front(*EmptyItr);
-					break;
-				case eNum_Reserve2:
-					Reserve_list2.push_front(*EmptyItr);
-					break;
-				case eNum_Reserve3:
-					Reserve_list3.push_front(*EmptyItr);
-					break;
-				case eNum_Reserve4:
-					Reserve_list4.push_front(*EmptyItr);
-					break;
-				case eNum_Reserve5:
-					Reserve_list5.push_front(*EmptyItr);
-					break;
-				case eNum_Reserve6:
-					Reserve_list6.push_front(*EmptyItr);
-					break;
-				case eNum_Waste:
-					Waste_list.push_front(*EmptyItr);
+			//残っているカードの数
+			int RemainingCard_num = Remaining_list.size();
+			//残っているカードの数の中で、乱数を生成する関数を作成。
+			std::uniform_int_distribution<int> CardRan(0, RemainingCard_num - 1);
+			//Itrは、リストのN番目を指す。最初の要素を入れる
+			auto Itr = Remaining_list.begin();
+			//CardRan(eng)番目の要素を取得。Itrのポインタがその数字
+			std::advance(Itr, CardRan(eng));
 
-				}
+			//次に処理するカードの数字
+			int NextProcessCardNum = *Itr;
+			//Remaining_listから、使用した値を削除
+			Remaining_list.remove(NextProcessCardNum);
+			//カードの数字を各リストに入れる
+			switch (RemainingCard_num) {
+			case 52:
+				Reserve_listOpen0.push_front(NextProcessCardNum);
+				break;
+			case 51:
+				Reserve_listOpen1.push_front(NextProcessCardNum);
+				break;
+			case 50:
+				Reserve_list1.push_front(NextProcessCardNum);
+				break;
+			case 49:
+				Reserve_listOpen2.push_front(NextProcessCardNum);
+				break;
+			case 48:
+			case 47:
+				Reserve_list2.push_front(NextProcessCardNum);
+				break;
+			case 46:
+				Reserve_listOpen3.push_front(NextProcessCardNum);
+				break;
+			case 45:
+			case 44:
+			case 43:
+				Reserve_list3.push_front(NextProcessCardNum);
+				break;
+			case 42:
+				Reserve_listOpen4.push_front(NextProcessCardNum);
+				break;
+			case 41:
+			case 40:
+			case 39:
+			case 38:
+				Reserve_list4.push_front(NextProcessCardNum);
+				break;
+			case 37:
+				Reserve_listOpen5.push_front(NextProcessCardNum);
+				break;
+			case 36:
+			case 35:
+			case 34:
+			case 33:
+			case 32:
+				Reserve_list5.push_front(NextProcessCardNum);
+				break;
+			case 31:
+				Reserve_listOpen6.push_front(NextProcessCardNum);
+				break;
+			case 30:
+			case 29:
+			case 28:
+			case 27:
+			case 26:
+			case 25:
+				Reserve_list6.push_front(NextProcessCardNum);
+				break;
+			default:
+				Stock_list.push_front(NextProcessCardNum);
+				break;
 			}
-			break;
+		}
+		break;
+	case eState_Normal:
+	case eState_Auto:
+	case eState_Debug:
+		while (!Remaining_list.empty()) {
+			//空白リストを更新
+			AddEmpty4CardList();
+			//std::cout << Remaining_list.size() << std::endl;
+			//std::cout << Empty_list.size() << std::endl;
+			//残ってるカードリストの中で乱数
+			std::uniform_int_distribution<int> CardRanN(0, Remaining_list.size() - 1);
+			std::uniform_int_distribution<int> CardRan4(0, Empty_list4Types.size() - 1);
+			//std::cout << "make ran" << std::endl;
+			//すべてのイテレータ作成
+			auto RemainingItr = Remaining_list.begin();
+			//auto EmptyItr = Empty_list.begin();
+			auto HeartItr = HeartCard_list.end();
+			auto DiamondItr = DiamondCard_list.end();
+			auto ClubItr = ClubCard_list.end();
+			auto SpadeItr = SpadeCard_list.end();
+			auto Empty4Itr = Empty_list4Types.begin();
+			//std::cout << "makeItr" << std::endl;
+			//ランダムな場所に入れるための乱数生成
+			//値リストの最初にカードを追加
+			std::advance(RemainingItr, CardRanN(eng));
+			//std::cout << "itrRanfin" << std::endl;
+			//移動させるカードの種類を選ぶ。
+			std::advance(Empty4Itr, CardRan4(eng));
+			int Addlist = *Empty4Itr;
+			int AddNum;//移動させる数字
+			//AddNumに代入して、値を削除
+			/*std::cout << "Heart :" << HeartCard_list.size() << std::endl;
+			std::cout << "Diamond :" << DiamondCard_list.size() << std::endl;
+			std::cout << "Club :" << ClubCard_list.size() << std::endl;
+			std::cout << "Spade :" << SpadeCard_list.size() << std::endl;*/
+			switch (Addlist) {
+			case eNum_Heart:
+				//std::cout << "heart" << std::endl;
+				HeartItr--;
+				AddNum = *HeartItr;
+				HeartCard_list.pop_back();
+				break;
+			case eNum_Club:
+				//std::cout << "Club" << std::endl;
+				ClubItr--;
+				AddNum = *ClubItr;
+				ClubCard_list.pop_back();
+				break;
+			case eNum_Spade:
+				//std::cout << "Spade" << std::endl;
+				SpadeItr--;
+				AddNum = *SpadeItr;
+				SpadeCard_list.pop_back();
+				break;
+			case eNum_Diamond:
+				//std::cout << "Diamond" << std::endl;
+				DiamondItr--;
+				AddNum = *DiamondItr;
+				DiamondCard_list.pop_back();
+				break;
+			}
+			//std::cout << "listchoicefin" << std::endl;
+			//std::cout << "RemainingItr: " << *RemainingItr << std::endl;
+			//カードの数字を各リストに入れる
+			switch (*RemainingItr) {
+			case 0:
+				Reserve_list0.push_back(AddNum);
+				break;
+			case 1:
+			case 2:
+				Reserve_list1.push_back(AddNum);
+				break;
+			case 3:
+			case 4:
+			case 5:				
+				Reserve_list2.push_back(AddNum);
+				break;
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+				Reserve_list3.push_back(AddNum);
+				break;
+			case 10:
+			case 11:
+			case 12:
+			case 13:
+			case 14:
+				Reserve_list4.push_back(AddNum);
+				break;
+			case 15:
+			case 16:
+			case 17:
+			case 18:
+			case 19:
+			case 20:
+				Reserve_list5.push_back(AddNum);
+				break;
+			case 21:
+			case 22:
+			case 23:
+			case 24:
+			case 25:
+			case 26:
+			case 27:
+				Reserve_list6.push_back(AddNum);
+				break;
+			default:
+				Stock_list.push_front(AddNum);
+				break;
+			}
+			//std::cout << "switchfin" << std::endl;
+			Remaining_list.remove(*RemainingItr);
+		}
+		//std::cout << "配置済" << std::endl;
+		//std::cout << Stock_list.size() << std::endl;
+		int CountNum = Stock_list.size();
+		while (CountNum > 0) {
+			auto StockItr = Stock_list.begin();
+			std::uniform_int_distribution<int> CardRanS(Stock_list.size()- CountNum, Stock_list.size() - 1);
+			std::advance(StockItr, CardRanS(eng));
+			int CopyNum = *StockItr;
+			Stock_list.remove(*StockItr);
+			Stock_list.push_front(CopyNum);
+			CountNum--;
+		}
+		break;
 	}
-	//std::cout << Remaining_list.size() << std::endl;
-	/*std::cout << "Stock :";
-	for (auto const& i : Stock_list) {
-		std::cout << "," << i ;
-	}
-	std::cout <<std::endl<< " Reserve_list0 :" ; 
-	for (auto const& i : Reserve_list0) {
-		std::cout << "," << i;
-	}
-	std::cout << std::endl << " Reserve_list1 :" ;
-	for (auto const& i : Reserve_list1) {
-		std::cout << "," << i;
-	}
-	std::cout << std::endl << " Reserve_list2 :" ;
-	for (auto const& i : Reserve_list2) {
-		std::cout << "," << i;
-	}
-	std::cout << std::endl << " Reserve_list3 :" ;
-	for (auto const& i : Reserve_list3) {
-		std::cout << "," << i;
-	}
-	std::cout << std::endl << " Reserve_list4 :" ;
-	for (auto const& i : Reserve_list4) {
-		std::cout << "," << i;
-	}
-	std::cout << std::endl << " Reserve_list5 :" ;
-	for (auto const& i : Reserve_list5) {
-		std::cout << "," << i;
-	}
-	std::cout << std::endl << " Reserve_list6 :" ;
-	for (auto const& i : Reserve_list6) {
-		std::cout << "," << i;
-	}
-	std::cout<<std::endl;*/
-	//std::cout << std::endl << " Foundation_list :" ;
-	/*for (auto const& i : Foundation_list) {
-		std::cout << "," << i;
-	}*/
+	AllCardNumOutPut_debug();
 }
 void BaseCard::CardNumToImage(int ThatCardNumber) {
 	//呼ばれたら、その引数のカードをm_imgに指定
@@ -1234,6 +1286,27 @@ void BaseCard::AddToListend(int ListNum, int AddNum) {
 }
 bool BaseCard::EmptyOrNotTheList(int ListNum) {
 	switch (ListNum) {
+	case eNum_Reserve0:
+		return Reserve_list0.empty();
+		break;
+	case eNum_Reserve1:
+		return Reserve_list1.empty();
+		break;
+	case eNum_Reserve2:
+		return Reserve_list2.empty();
+		break;
+	case eNum_Reserve3:
+		return Reserve_list3.empty();
+		break;
+	case eNum_Reserve4:
+		return Reserve_list4.empty();
+		break;
+	case eNum_Reserve5:
+		return Reserve_list5.empty();
+		break;
+	case eNum_Reserve6:
+		return Reserve_list6.empty();
+		break;
 	case eNum_ReserveOpen0:
 		return Reserve_listOpen0.empty();
 		break;
@@ -1416,7 +1489,9 @@ void BaseCard::NormalMode() {
 	//すべてのreserveリストのカードが無くなったら、
 	if (CheckReserveEmpty()) {
 		SelectMode = eState_Auto;
+		//std::cout << "ModeChange" << std::endl;
 	}
+	//std::cout << CheckReserveEmpty() ;
 	//動かせるカードの上にマウスがあるかどうか
 	//ある場合,	MouseOverCard=trueにする、ListNumを更新する。
 	InsideOrOutsideTheCard();
@@ -1485,86 +1560,7 @@ void BaseCard::AutoMode() {
 			//std::cout << "Open";
 			OpenListCheckAndAdd();
 			//std::cout << "Openfin" << std::endl;
-			/*std::cout << std::endl << "Stock :";
-			for (auto const& i : Stock_list) {
-				std::cout << "," << i;
-			}
-			std::cout << std::endl << "Waste :";
-			for (auto const& i : Waste_list) {
-				std::cout << "," << i;
-			}
-			std::cout << std::endl << " Reserve_list0 :";
-			for (auto const& i : Reserve_list0) {
-				std::cout << "," << i;
-			}
-			std::cout << std::endl << " Reserve_list1 :";
-			for (auto const& i : Reserve_list1) {
-				std::cout << "," << i;
-			}
-			std::cout << std::endl << " Reserve_list2 :";
-			for (auto const& i : Reserve_list2) {
-				std::cout << "," << i;
-			}
-			std::cout << std::endl << " Reserve_list3 :";
-			for (auto const& i : Reserve_list3) {
-				std::cout << "," << i;
-			}
-			std::cout << std::endl << " Reserve_list4 :";
-			for (auto const& i : Reserve_list4) {
-				std::cout << "," << i;
-			}
-			std::cout << std::endl << " Reserve_list5 :";
-			for (auto const& i : Reserve_list5) {
-				std::cout << "," << i;
-			}
-			std::cout << std::endl << " Reserve_list6 :";
-			for (auto const& i : Reserve_list6) {
-				std::cout << "," << i;
-			}
-			std::cout << std::endl << " Reserve_listOpen0 :";
-			for (auto const& i : Reserve_listOpen0) {
-				std::cout << "," << i;
-			}
-			std::cout << std::endl << " Reserve_listOpen1 :";
-			for (auto const& i : Reserve_listOpen1) {
-				std::cout << "," << i;
-			}
-			std::cout << std::endl << " Reserve_listOpen2 :";
-			for (auto const& i : Reserve_listOpen2) {
-				std::cout << "," << i;
-			}
-			std::cout << std::endl << " Reserve_listOpen3 :";
-			for (auto const& i : Reserve_listOpen3) {
-				std::cout << "," << i;
-			}
-			std::cout << std::endl << " Reserve_listOpen4 :";
-			for (auto const& i : Reserve_listOpen4) {
-				std::cout << "," << i;
-			}
-			std::cout << std::endl << " Reserve_listOpen5 :";
-			for (auto const& i : Reserve_listOpen5) {
-				std::cout << "," << i;
-			}
-			std::cout << std::endl << " Reserve_listOpen6 :";
-			for (auto const& i : Reserve_listOpen6) {
-				std::cout << "," << i;
-			}
-			std::cout << std::endl << " Foundation_list0 :";
-			for (auto const& i : Foundation_list0) {
-				std::cout << "," << i;
-			}
-			std::cout << std::endl << " Foundation_list1 :";
-			for (auto const& i : Foundation_list1) {
-				std::cout << "," << i;
-			}
-			std::cout << std::endl << " Foundation_list2 :";
-			for (auto const& i : Foundation_list2) {
-				std::cout << "," << i;
-			}
-			std::cout << std::endl << " Foundation_list3 :" << std::endl;
-			for (auto const& i : Foundation_list3) {
-				std::cout << "," << i;
-			}*/
+			
 			if (EmptyOrNotTheList(MovingLane)) {
 				break;
 			}
@@ -1724,8 +1720,13 @@ void BaseCard::ReStartGame(bool NewGame) {
 	Foundation_list3.clear(); 
 	Moved_Log.clear(); 
 	Remaining_list.clear();
+	Empty_list4Types.clear();
 	//カードを初期位置へ配置
 	Remaining_list = AllCard_list;
+	HeartCard_list = { 0,1,2,3,4,5,6,7,8,9,10,11,12 };
+	ClubCard_list = { 13,14,15,16,17,18,19,20,21,22,23,24,25 };
+	DiamondCard_list = { 26,27,28,29,30,31,32,33,34,35,36,37,38 };
+	SpadeCard_list = { 39,40,41,42,43,44,45,46,47,48,49,50,51 };
 	CardListSet();
 }
 bool BaseCard::ClearOrNot(){
@@ -1748,8 +1749,12 @@ void BaseCard::UserOperation() {
 			CheckAddToFoundationList();
 		}
 	}
+	//もし、押したカードのリストが空白じゃない場合、途中のカードから移動できるならば、
+	// 途中から移動できるかどうかの処理をする関数が必要
+	//if(MovingLane)
+	// そのカードの場所変更と、途中から移動可能というフラグをONにする
 	//マウスを離したとき、マウスがreserveリストの上にある場合
-	if (PULL(CInput::eMouseL) && MouseOverReserve) {
+	if (PULL(CInput::eMouseL) && MouseOverReserve && CardMoving) {
 		//マウスの下のリストが空白でかつ、動かしてるカードのリストが空白じゃない場合
 		if (!EmptyOrNotTheList(MovingLane) && EmptyOrNotTheList(ListNum)) {
 			//動かしてるリストの一番最初のカードがKの場合、
@@ -1798,4 +1803,177 @@ void BaseCard::AddEmptyList() {
 	if (Stock_list.size() < 24) {
 		Empty_list.push_back(eNum_stock);
 	}
+	std::cout << std::endl << " Empty_debug :";
+	for (auto const& i : Empty_list) {
+		std::cout << "," << i;
+	}
 }
+void BaseCard::AllCardNumOutPut_debug() {
+	/*std::cout << std::endl << " Empty_debug :";
+	for (auto const& i : Empty_list) {
+		std::cout << "," << i;
+	}*/
+	std::cout << std::endl << " Stock :";
+	for (auto const& i : Stock_list) {
+		std::cout << "," << i;
+	}
+	std::cout << std::endl << " Waste :";
+	for (auto const& i : Waste_list) {
+		std::cout << "," << i;
+	}
+	std::cout << std::endl << " Reserve_list0 :";
+	for (auto const& i : Reserve_list0) {
+		std::cout << "," << i;
+	}
+	std::cout << std::endl << " Reserve_list1 :";
+	for (auto const& i : Reserve_list1) {
+		std::cout << "," << i;
+	}
+	std::cout << std::endl << " Reserve_list2 :";
+	for (auto const& i : Reserve_list2) {
+		std::cout << "," << i;
+	}
+	std::cout << std::endl << " Reserve_list3 :";
+	for (auto const& i : Reserve_list3) {
+		std::cout << "," << i;
+	}
+	std::cout << std::endl << " Reserve_list4 :";
+	for (auto const& i : Reserve_list4) {
+		std::cout << "," << i;
+	}
+	std::cout << std::endl << " Reserve_list5 :";
+	for (auto const& i : Reserve_list5) {
+		std::cout << "," << i;
+	}
+	std::cout << std::endl << " Reserve_list6 :";
+	for (auto const& i : Reserve_list6) {
+		std::cout << "," << i;
+	}
+	std::cout << std::endl << " Reserve_listOpen0 :";
+	for (auto const& i : Reserve_listOpen0) {
+		std::cout << "," << i;
+	}
+	std::cout << std::endl << " Reserve_listOpen1 :";
+	for (auto const& i : Reserve_listOpen1) {
+		std::cout << "," << i;
+	}
+	std::cout << std::endl << " Reserve_listOpen2 :";
+	for (auto const& i : Reserve_listOpen2) {
+		std::cout << "," << i;
+	}
+	std::cout << std::endl << " Reserve_listOpen3 :";
+	for (auto const& i : Reserve_listOpen3) {
+		std::cout << "," << i;
+	}
+	std::cout << std::endl << " Reserve_listOpen4 :";
+	for (auto const& i : Reserve_listOpen4) {
+		std::cout << "," << i;
+	}
+	std::cout << std::endl << " Reserve_listOpen5 :";
+	for (auto const& i : Reserve_listOpen5) {
+		std::cout << "," << i;
+	}
+	std::cout << std::endl << " Reserve_listOpen6 :";
+	for (auto const& i : Reserve_listOpen6) {
+		std::cout << "," << i;
+	}
+	std::cout << std::endl << " Foundation_list0 :";
+	for (auto const& i : Foundation_list0) {
+		std::cout << "," << i;
+	}
+	std::cout << std::endl << " Foundation_list1 :";
+	for (auto const& i : Foundation_list1) {
+		std::cout << "," << i;
+	}
+	std::cout << std::endl << " Foundation_list2 :";
+	for (auto const& i : Foundation_list2) {
+		std::cout << "," << i;
+	}
+	std::cout << std::endl << " Foundation_list3 :" ;
+	for (auto const& i : Foundation_list3) {
+		std::cout << "," << i;
+	}
+	std::cout << std::endl;
+}
+void BaseCard::AddEmpty4CardList() {
+	Empty_list4Types.clear();
+	if (HeartCard_list.size() > 0) {
+		Empty_list4Types.push_back(eNum_Heart);
+	}
+	if (DiamondCard_list.size() > 0) {
+		Empty_list4Types.push_back(eNum_Diamond);
+	}
+	if (ClubCard_list.size() > 0) {
+		Empty_list4Types.push_back(eNum_Club);
+	}
+	if (SpadeCard_list.size() > 0) {
+		Empty_list4Types.push_back(eNum_Spade);
+	}
+}
+void BaseCard::DebugMode() {
+	//モード切り替え
+	if(PUSH(CInput::eButton5)){
+		if (DebugMode_State == eState_Normal) {
+			DebugMode_State = eState_Auto;
+		}
+		else if (DebugMode_State == eState_Auto) {
+			DebugMode_State = eState_Normal;
+		}
+	}
+	switch (DebugMode_State) {
+	case eState_Normal:
+		NormalMode();
+		break;
+	case eState_Auto:
+		AutoMode();
+		break;
+	}
+}
+void BaseCard::Middle_CheckAddToReserveList() {
+	if (EmptyOrNotTheList(MovingLane)) {
+		return;
+	}
+	//途中から移動できるか調べる
+	//調べられたらMiddleMovingCheck=true;
+	auto MovingItr = Reserve_listOpen0.begin();
+	auto SearchItr = Reserve_listOpen0.begin();
+	switch (MovingLane) {
+	case eNum_ReserveOpen0:
+		MovingItr = Reserve_listOpen0.begin();
+		break;
+	case eNum_ReserveOpen1:
+		MovingItr = Reserve_listOpen1.begin();
+		break;
+	case eNum_ReserveOpen2:
+		MovingItr = Reserve_listOpen2.begin();
+		break;
+	case eNum_ReserveOpen3:
+		MovingItr = Reserve_listOpen3.begin();
+		break;
+	case eNum_ReserveOpen4:
+		MovingItr = Reserve_listOpen4.begin();
+		break;
+	case eNum_ReserveOpen5:
+		MovingItr = Reserve_listOpen5.begin();
+		break;
+	case eNum_ReserveOpen6:
+		MovingItr = Reserve_listOpen6.begin();
+		break;
+	}
+	//すべてのreserveの最後のカードを調べる
+	int ListEndNum[8];
+	int SearchList;
+	ListEndNum[eNum_ReserveOpen0] = Reserve_listOpen0.back();
+	ListEndNum[eNum_ReserveOpen1] = Reserve_listOpen1.back();
+	ListEndNum[eNum_ReserveOpen2] = Reserve_listOpen2.back();
+	ListEndNum[eNum_ReserveOpen3] = Reserve_listOpen3.back();
+	ListEndNum[eNum_ReserveOpen4] = Reserve_listOpen4.back();
+	ListEndNum[eNum_ReserveOpen5] = Reserve_listOpen5.back();
+	ListEndNum[eNum_ReserveOpen6] = Reserve_listOpen6.back();
+	//movinglaneのカードを１枚ずつ移動可能か、各リスト確かめる
+
+	//SearchList = eNum_ReserveOpen0;
+	//if (MovingLane != ListEndNum[SearchList]) {
+		//MovingItrとListEndNum
+	//}
+};

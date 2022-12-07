@@ -8,10 +8,10 @@ class SelectScene :public Base {
 		//ゲームタイトルのstateを作る
 		eState_Normal,
 		eState_Random,
-		eState_Auto,
+		eState_Debug,
 	};
 private:
-	char game_title[10][100] = {"NormalMode(未実装)","RandomMode","DebugMode(Auto)"};
+	char game_title[10][100] = {"NormalMode","RandomMode","DebugMode"};
 	CFont title_text;
 	CFont select_title_text;
 public:

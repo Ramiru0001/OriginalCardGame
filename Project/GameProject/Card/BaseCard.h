@@ -4,10 +4,17 @@
 //カードを引いたときに呼ばれる
 class BaseCard :public Base{
 public:
+	enum {
+		eNum_Heart,
+		eNum_Diamond,
+		eNum_Club,
+		eNum_Spade,
+	};
 	//現在のゲーム設定
 	enum {
 		eState_Normal,
 		eState_Random,
+		eState_Debug,
 		eState_Auto,
 	};
 	//リストナンバー
@@ -53,6 +60,10 @@ public:
 	bool MouseOverReserveAndWasteLists;
 	//stockリストの上にマウスがあるかどうか
 	bool MouseOverStockList;
+	//途中から動かせる場合:true
+	bool MiddleMovingCheck;
+	//途中から動かせる場合、ここにそのカードの場所（Itr）の数を入れる
+	int MiddleMovingNum;
 	///場札の空白 20
 	int Space = 20;
 	//場札openの空白 50
@@ -61,8 +72,14 @@ public:
 	int SelectMode = 0;
 	//カードが今動いているかどうか
 	bool CardMoving;
+	//debugモードのstate
+	int DebugMode_State;
 	//すべてのカードのリスト
 	std::list<int> AllCard_list = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51 };
+	std::list<int> HeartCard_list = { 0,1,2,3,4,5,6,7,8,9,10,11,12 };//ハートカードリスト
+	std::list<int> ClubCard_list = { 13,14,15,16,17,18,19,20,21,22,23,24,25 };//クラブカードリスト
+	std::list<int> DiamondCard_list = { 26,27,28,29,30,31,32,33,34,35,36,37,38 };//ダイヤカードリスト
+	std::list<int> SpadeCard_list = { 39,40,41,42,43,44,45,46,47,48,49,50,51 };//スペードカードリスト
 	//余ってるカードのリスト
 	std::list<int> Remaining_list = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51 };
 	std::list<int> Stock_list;//開かれてない山札
@@ -87,6 +104,7 @@ public:
 	std::list<int> Foundation_list3;//左上の組札。左から4番目
 	std::list<int> Moved_Log;//ログ
 	std::list<int> Empty_list;//カード配置時、空白のリストを入れる
+	std::list<int> Empty_list4Types;//カード配置時、空白のリストを入れる。４種類の模様カード。
 	CImage heart[14];//ハートの赤
 	CImage diamond[14];//ダイヤの赤
 	CImage club[14];//クローバーの黒
@@ -155,4 +173,12 @@ public:
 	void UserOperation();
 	//カード配置時、空きのあるリストを調べる
 	void AddEmptyList();
+	//４種類のカードリストで空きのあるリストを調べる
+	void AddEmpty4CardList();
+	//デバッグ用。カードリストの出力
+	void AllCardNumOutPut_debug();
+	//デバッグ用。オートと手動切替可能。
+	void DebugMode();
+	//途中からreserveリストへ移動できるかどうかの処理
+	void Middle_CheckAddToReserveList();
 };
