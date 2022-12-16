@@ -539,10 +539,9 @@ void BaseCard::InsideOrOutsideTheCard() {
 	if (LineNum < 0) {
 		LineNum = 0;
 	}
-	CVector2D mouse_pos = CInput::GetMousePoint();
 	//Reserve0のカードの中にマウスがあるかどうか
-	if (SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920 <= mouse_pos.x && SCREEN_WIDTH * (25 + 250 + (250 + 20) * RowNum) / 1920 >= mouse_pos.x &&
-		SCREEN_HEIGHT * (350 + (Reserve_list0.size() * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (375 + 350 + (Reserve_list0.size() * Space)+(LineNum * OpenSpace)) / 1080 >= mouse_pos.y) {
+	if (SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920 <= MousePos.x && SCREEN_WIDTH * (25 + 250 + (250 + 20) * RowNum) / 1920 >= MousePos.x &&
+		SCREEN_HEIGHT * (350 + (Reserve_list0.size() * Space)) / 1080 <= MousePos.y && SCREEN_HEIGHT * (375 + 350 + (Reserve_list0.size() * Space)+(LineNum * OpenSpace)) / 1080 >= MousePos.y) {
 		ListNum = eNum_ReserveOpen0;
 		MouseOverCard = true;
 		MouseOverReserve = true;
@@ -555,8 +554,8 @@ void BaseCard::InsideOrOutsideTheCard() {
 		LineNum = 0;
 	}
 	RowNum = 1;
-	if (SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920 <= mouse_pos.x && SCREEN_WIDTH * (25 + 250 + (250 + 20) * RowNum) / 1920 >= mouse_pos.x &&
-		SCREEN_HEIGHT * (350 + (Reserve_list1.size() * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (375 + 350 + (Reserve_list1.size() * Space) + (LineNum * OpenSpace)) / 1080 >= mouse_pos.y) {
+	if (SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920 <= MousePos.x && SCREEN_WIDTH * (25 + 250 + (250 + 20) * RowNum) / 1920 >= MousePos.x &&
+		SCREEN_HEIGHT * (350 + (Reserve_list1.size() * Space)) / 1080 <= MousePos.y && SCREEN_HEIGHT * (375 + 350 + (Reserve_list1.size() * Space) + (LineNum * OpenSpace)) / 1080 >= MousePos.y) {
 		ListNum = eNum_ReserveOpen1;
 		MouseOverCard = true;
 		MouseOverReserve = true;
@@ -569,8 +568,8 @@ void BaseCard::InsideOrOutsideTheCard() {
 		LineNum = 0;
 	}
 	RowNum = 2;
-	if (SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920 <= mouse_pos.x && SCREEN_WIDTH * (25 + 250 + (250 + 20) * RowNum) / 1920 >= mouse_pos.x &&
-		SCREEN_HEIGHT * (350 + (Reserve_list2.size() * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (375 + 350 + (Reserve_list2.size() * Space) + (LineNum * OpenSpace)) / 1080 >= mouse_pos.y) {
+	if (SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920 <= MousePos.x && SCREEN_WIDTH * (25 + 250 + (250 + 20) * RowNum) / 1920 >= MousePos.x &&
+		SCREEN_HEIGHT * (350 + (Reserve_list2.size() * Space)) / 1080 <= MousePos.y && SCREEN_HEIGHT * (375 + 350 + (Reserve_list2.size() * Space) + (LineNum * OpenSpace)) / 1080 >= MousePos.y) {
 		ListNum = eNum_ReserveOpen2;
 		MouseOverCard = true;
 		MouseOverReserve = true;
@@ -583,8 +582,8 @@ void BaseCard::InsideOrOutsideTheCard() {
 		LineNum = 0;
 	}
 	RowNum = 3;
-	if (SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920 <= mouse_pos.x && SCREEN_WIDTH * (25 + 250 + (250 + 20) * RowNum) / 1920 >= mouse_pos.x &&
-		SCREEN_HEIGHT * (350 + (Reserve_list3.size() * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (375 + 350 + (Reserve_list3.size() * Space) + (LineNum * OpenSpace)) / 1080 >= mouse_pos.y) {
+	if (SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920 <= MousePos.x && SCREEN_WIDTH * (25 + 250 + (250 + 20) * RowNum) / 1920 >= MousePos.x &&
+		SCREEN_HEIGHT * (350 + (Reserve_list3.size() * Space)) / 1080 <= MousePos.y && SCREEN_HEIGHT * (375 + 350 + (Reserve_list3.size() * Space) + (LineNum * OpenSpace)) / 1080 >= MousePos.y) {
 		ListNum = eNum_ReserveOpen3;
 		MouseOverCard = true;
 		MouseOverReserve = true;
@@ -597,8 +596,8 @@ void BaseCard::InsideOrOutsideTheCard() {
 		LineNum = 0;
 	}
 	RowNum = 4;
-	if (SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920 <= mouse_pos.x && SCREEN_WIDTH * (25 + 250 + (250 + 20) * RowNum) / 1920 >= mouse_pos.x &&
-		SCREEN_HEIGHT * (350 + (Reserve_list4.size() * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (375 + 350 + (Reserve_list4.size() * Space) + (LineNum * OpenSpace)) / 1080 >= mouse_pos.y) {
+	if (SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920 <= MousePos.x && SCREEN_WIDTH * (25 + 250 + (250 + 20) * RowNum) / 1920 >= MousePos.x &&
+		SCREEN_HEIGHT * (350 + (Reserve_list4.size() * Space)) / 1080 <= MousePos.y && SCREEN_HEIGHT * (375 + 350 + (Reserve_list4.size() * Space) + (LineNum * OpenSpace)) / 1080 >= MousePos.y) {
 		ListNum = eNum_ReserveOpen4;
 		MouseOverCard = true;
 		MouseOverReserve = true;
@@ -611,8 +610,8 @@ void BaseCard::InsideOrOutsideTheCard() {
 		LineNum = 0;
 	}
 	RowNum = 5;
-	if (SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920 <= mouse_pos.x && SCREEN_WIDTH * (25 + 250 + (250 + 20) * RowNum) / 1920 >= mouse_pos.x &&
-		SCREEN_HEIGHT * (350 + (Reserve_list5.size() * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (375 + 350 + (Reserve_list5.size() * Space) + (LineNum * OpenSpace)) / 1080 >= mouse_pos.y) {
+	if (SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920 <= MousePos.x && SCREEN_WIDTH * (25 + 250 + (250 + 20) * RowNum) / 1920 >= MousePos.x &&
+		SCREEN_HEIGHT * (350 + (Reserve_list5.size() * Space)) / 1080 <= MousePos.y && SCREEN_HEIGHT * (375 + 350 + (Reserve_list5.size() * Space) + (LineNum * OpenSpace)) / 1080 >= MousePos.y) {
 		ListNum = eNum_ReserveOpen5;
 		MouseOverCard = true;
 		MouseOverReserve = true;
@@ -625,8 +624,8 @@ void BaseCard::InsideOrOutsideTheCard() {
 		LineNum = 0;
 	}
 	RowNum = 6;
-	if (SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920 <= mouse_pos.x && SCREEN_WIDTH * (25 + 250 + (250 + 20) * RowNum) / 1920 >= mouse_pos.x &&
-		SCREEN_HEIGHT * (350 + (Reserve_list6.size() * Space)) / 1080 <= mouse_pos.y && SCREEN_HEIGHT * (375 + 350 + (Reserve_list6.size() * Space) + (LineNum * OpenSpace)) / 1080 >= mouse_pos.y) {
+	if (SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920 <= MousePos.x && SCREEN_WIDTH * (25 + 250 + (250 + 20) * RowNum) / 1920 >= MousePos.x &&
+		SCREEN_HEIGHT * (350 + (Reserve_list6.size() * Space)) / 1080 <= MousePos.y && SCREEN_HEIGHT * (375 + 350 + (Reserve_list6.size() * Space) + (LineNum * OpenSpace)) / 1080 >= MousePos.y) {
 		ListNum = eNum_ReserveOpen6;
 		MouseOverCard = true;
 		MouseOverReserve = true;
@@ -634,36 +633,36 @@ void BaseCard::InsideOrOutsideTheCard() {
 		return;
 	}
 	//Foundation0のカードの中にマウスがあるかどうか
-	if (SCREEN_WIDTH * 0 / 1920 <= mouse_pos.x && SCREEN_WIDTH * 200 / 1920 >= mouse_pos.x &&
-		SCREEN_HEIGHT * 0 / 1080 <= mouse_pos.y && SCREEN_HEIGHT * 300 / 1080 >= mouse_pos.y) {
+	if (SCREEN_WIDTH * 0 / 1920 <= MousePos.x && SCREEN_WIDTH * 200 / 1920 >= MousePos.x &&
+		SCREEN_HEIGHT * 0 / 1080 <= MousePos.y && SCREEN_HEIGHT * 300 / 1080 >= MousePos.y) {
 		ListNum = eNum_Foundation0;
 		MouseOverCard = true;
 		return;
 	}
 	//Foundation1のカードの中にマウスがあるかどうか
-	if (SCREEN_WIDTH * 210 / 1920 <= mouse_pos.x && SCREEN_WIDTH * 410 / 1920 >= mouse_pos.x &&
-		SCREEN_HEIGHT * 0 / 1080 <= mouse_pos.y && SCREEN_HEIGHT * 300 / 1080 >= mouse_pos.y) {
+	if (SCREEN_WIDTH * 210 / 1920 <= MousePos.x && SCREEN_WIDTH * 410 / 1920 >= MousePos.x &&
+		SCREEN_HEIGHT * 0 / 1080 <= MousePos.y && SCREEN_HEIGHT * 300 / 1080 >= MousePos.y) {
 		ListNum = eNum_Foundation1;
 		MouseOverCard = true;
 		return;
 	}
 	//Foundation2のカードの中にマウスがあるかどうか
-	if (SCREEN_WIDTH * 420 / 1920 <= mouse_pos.x && SCREEN_WIDTH * 620 / 1920 >= mouse_pos.x &&
-		SCREEN_HEIGHT * 0 / 1080 <= mouse_pos.y && SCREEN_HEIGHT * 300 / 1080 >= mouse_pos.y) {
+	if (SCREEN_WIDTH * 420 / 1920 <= MousePos.x && SCREEN_WIDTH * 620 / 1920 >= MousePos.x &&
+		SCREEN_HEIGHT * 0 / 1080 <= MousePos.y && SCREEN_HEIGHT * 300 / 1080 >= MousePos.y) {
 		ListNum = eNum_Foundation2;
 		MouseOverCard = true;
 		return;
 	}
 	//Foundation3のカードの中にマウスがあるかどうか
-	if (SCREEN_WIDTH * 630 / 1920 <= mouse_pos.x && SCREEN_WIDTH * 830 / 1920 >= mouse_pos.x &&
-		SCREEN_HEIGHT * 0 / 1080 <= mouse_pos.y && SCREEN_HEIGHT * 300 / 1080 >= mouse_pos.y) {
+	if (SCREEN_WIDTH * 630 / 1920 <= MousePos.x && SCREEN_WIDTH * 830 / 1920 >= MousePos.x &&
+		SCREEN_HEIGHT * 0 / 1080 <= MousePos.y && SCREEN_HEIGHT * 300 / 1080 >= MousePos.y) {
 		ListNum = eNum_Foundation3;
 		MouseOverCard = true;
 		return;
 	}
 	//stockのカードの中にマウスがあるかどうか
-	if (SCREEN_WIDTH * 1710 / 1920 <= mouse_pos.x && SCREEN_WIDTH * 1910 / 1920 >= mouse_pos.x &&
-		SCREEN_HEIGHT * 0 / 1080 <= mouse_pos.y && SCREEN_HEIGHT * 300 / 1080 >= mouse_pos.y) {
+	if (SCREEN_WIDTH * 1710 / 1920 <= MousePos.x && SCREEN_WIDTH * 1910 / 1920 >= MousePos.x &&
+		SCREEN_HEIGHT * 0 / 1080 <= MousePos.y && SCREEN_HEIGHT * 300 / 1080 >= MousePos.y) {
 		ListNum = eNum_stock;
 		MouseOverStockList = true;
 	}
@@ -671,8 +670,8 @@ void BaseCard::InsideOrOutsideTheCard() {
 		MouseOverStockList = false;
 	}
 	//wasteのカードの中にマウスがあるかどうか
-	if (SCREEN_WIDTH * 1500 / 1920 <= mouse_pos.x && SCREEN_WIDTH * 1700 / 1920 >= mouse_pos.x &&
-		SCREEN_HEIGHT * 0 / 1080 <= mouse_pos.y && SCREEN_HEIGHT * 300 / 1080 >= mouse_pos.y) {
+	if (SCREEN_WIDTH * 1500 / 1920 <= MousePos.x && SCREEN_WIDTH * 1700 / 1920 >= MousePos.x &&
+		SCREEN_HEIGHT * 0 / 1080 <= MousePos.y && SCREEN_HEIGHT * 300 / 1080 >= MousePos.y) {
 		ListNum = eNum_Waste;
 		MouseOverCard = true;
 		MouseOverReserveAndWasteLists = true;
@@ -1570,7 +1569,9 @@ void BaseCard::AutoMode() {
 			}
 		}
 		//	Movinglaneを途中から他のレーンに移動可能か調べる
-		Middle_Judgement_CheckAddToReserveList();
+		Middle_Judgement_CheckAddToReserveList(MovingLane);
+		Middle_CheckAddToReserveList();
+
 		//ここで、途中からレーン移動の処理。移動可能の場合のみ
 		if (MiddleMovingCheck) {
 			Middle_CheckAddToReserveList();
@@ -1933,7 +1934,7 @@ void BaseCard::DebugMode() {
 			DebugMode_State = eState_Normal;
 		}
 	}
-	if (PUSH(CInput::eButton4)) {
+	if (PUSH(CInput::eButton10)) {
 		ReStartGame(true);
 	}
 	switch (DebugMode_State) {
@@ -1945,7 +1946,7 @@ void BaseCard::DebugMode() {
 		break;
 	}
 }
-void BaseCard::Middle_Judgement_CheckAddToReserveList() {
+void BaseCard::Middle_Judgement_CheckAddToReserveList(int MovingLane) {
 	//falseで初期化
 	MiddleMovingCheck = false;
 	//std::cout << "start" <<std::endl;
@@ -2062,13 +2063,159 @@ void BaseCard::Middle_Judgement_CheckAddToReserveList() {
 	//std::cout << "MiddleMovingCheck :" << MiddleMovingCheck << std::endl;
 };
 void BaseCard::Middle_CheckAddToReserveList() {
+	//クリックした場合に、他の処理と同様に実行される処理
+	//途中から動かせるカードがある場合だけ実行される
+	std::cout << "Middle_CheckAddToReserveList start" << std::endl;
 	if (!MiddleMovingCheck || EmptyOrNotTheList(MovingLane)) {
+		std::cout << "Middle_CheckAddToReserveList end0" << std::endl;
 		return;
 	}
-	//マウスでクリックしている場所に応じて、変数に入れてる、移動可能場所に移動する
-	//※クリックしているカードのN番目の数字を入手する必要がある
-	//autoの場合は、手前から順に移動
-	//１，マウスでクリックしている場所を判定する関数or変数の生成
-	// 　マウスの座標と、N番目のカード座標を出して、それを
-	//２，その場所に応じて、リストを動かす処理を作る
+	//マウスの場所と比較して、動かせる場所より下にマウスがあれば動かせるとする
+	//そのリストには、MiddleMovingCountの数動かせるところがある
+	//動かせるときのフラグ
+	bool MiddleMoving=false;
+	int MouseLane = MousePositionIsNthInTheList(MovingLane);
+	int count=0;
+	int MovingArea;
+	auto movingItr = Reserve_listOpen0.begin();
+	std::cout << "0" << std::endl;
+	while (count < MiddleMovingCount-1) {
+		if (MiddleMovingLane[count] <= MouseLane < MiddleMovingLane[count + 1]) {
+			//動かせるっていうフラグを立てる、
+			MiddleMoving = true;
+			//MovingLaneから動かせる
+			MovingArea = MiddleMovingLane[count];
+			break;
+		}
+		else {
+			MiddleMoving = false;
+		}
+		count++;
+	}
+	std::cout << "1" << std::endl;
+	if (!MiddleMoving) {
+		std::cout << "Middle_CheckAddToReserveList end1" << std::endl;
+		return;
+	}
+	std::cout << "2" << std::endl;
+	//動かせる場合の移動処理
+	//MovingAreaから下を移動可能リストに動かすという処理
+	//MovingLaneのリストサイズを読み込んで、MovingAreaからあとをMiddleMovinglistに移動
+	//そして、元のリストから消す
+	std::cout <<"MovingArea :" << MovingArea << std::endl;
+	std::cout << "MovingLane :" << MovingLane << std::endl;
+	switch (MovingLane) {
+	case eNum_ReserveOpen0:
+		//イテレータを、動かせる場所に配置
+		//movingItr = Reserve_listOpen0.begin();
+		std::cout << "Itr fin" << std::endl;
+		std::advance(movingItr, MovingArea);
+		std::cout << "adv fin" << std::endl;
+		while (CheckListSize(eNum_ReserveOpen0)>MovingArea) {
+			AddToListend(MiddleMovingList[count], *movingItr);
+			std::cout << "adde fin" << std::endl;
+			int num = *movingItr;
+			Reserve_listOpen0.remove(num); 
+			std::cout << "remove fin" << std::endl;
+			movingItr = Reserve_listOpen0.begin();
+			std::advance(movingItr, MovingArea);
+			std::cout << "adv fin" << std::endl;
+		}
+		std::cout << "case fin" << std::endl;
+		break;
+	case eNum_ReserveOpen1:
+		//イテレータを、動かせる場所に配置
+		while (CheckListSize(eNum_ReserveOpen0) > MovingArea) {
+			movingItr = Reserve_listOpen1.begin();
+			std::advance(movingItr, MovingArea);
+			AddToListend(MiddleMovingList[count], *movingItr);
+			int num = *movingItr;
+			Reserve_listOpen1.remove(num);
+		}
+		break;
+	case eNum_ReserveOpen2:
+		//イテレータを、動かせる場所に配置
+		while (CheckListSize(eNum_ReserveOpen0) > MovingArea) {
+			movingItr = Reserve_listOpen2.begin();
+			std::advance(movingItr, MovingArea);
+			AddToListend(MiddleMovingList[count], *movingItr);
+			int num = *movingItr;
+			Reserve_listOpen2.remove(num);
+		}
+		break;
+	case eNum_ReserveOpen3:
+		//イテレータを、動かせる場所に配置
+		while (CheckListSize(eNum_ReserveOpen0) > MovingArea) {
+			movingItr = Reserve_listOpen3.begin();
+			std::advance(movingItr, MovingArea);
+			AddToListend(MiddleMovingList[count], *movingItr);
+			int num = *movingItr;
+			Reserve_listOpen3.remove(num);
+		}
+		break;
+	case eNum_ReserveOpen4:
+		//イテレータを、動かせる場所に配置
+		while (CheckListSize(eNum_ReserveOpen0) > MovingArea) {
+			movingItr = Reserve_listOpen4.begin();
+			std::advance(movingItr, MovingArea);
+			AddToListend(MiddleMovingList[count], *movingItr);
+			int num = *movingItr;
+			Reserve_listOpen4.remove(num);
+		}
+		break;
+	case eNum_ReserveOpen5:
+		//イテレータを、動かせる場所に配置
+		while (CheckListSize(eNum_ReserveOpen0) > MovingArea) {
+			movingItr = Reserve_listOpen5.begin();
+			std::advance(movingItr, MovingArea);
+			AddToListend(MiddleMovingList[count], *movingItr);
+			int num = *movingItr;
+			Reserve_listOpen5.remove(num);
+		}
+		break;
+	case eNum_ReserveOpen6:
+		//イテレータを、動かせる場所に配置
+		while (CheckListSize(eNum_ReserveOpen0) > MovingArea) {
+			movingItr = Reserve_listOpen6.begin();
+			std::advance(movingItr, MovingArea);
+			AddToListend(MiddleMovingList[count], *movingItr);
+			int num = *movingItr;
+			Reserve_listOpen6.remove(num);
+		}
+		break;
+	}
+	std::cout << "Middle_CheckAddToReserveList badend" << std::endl;
+}
+int BaseCard::MousePositionIsNthInTheList(int ListNum) {
+	//Listnumのリストの、場所を測定し、mousuposと比較してN枚目を入手、
+	//そのreserveのサイズ＊20をして、そこから0枚目から、50ごとに数字を足していって、
+	//MousePosと比較して判定
+	//reserveリストの長さ
+	int ReserveSpace=0;
+	//reserveリストを数える
+	int ReserveCount=0; 
+	//
+	std::cout<<"MousePositionIsNthInTheList start"<<std::endl;
+	if (eNum_ReserveOpen0 > ListNum || eNum_ReserveOpen6 < ListNum) {
+		std::cout << "error end1" << std::endl;
+		return 111;
+	}
+	ReserveSpace = CheckListSize(ListNum - 7) * 20;
+	while (ReserveCount < (CheckListSize(ListNum)) - 1) {
+		if (SCREEN_WIDTH * (ReserveSpace + ReserveCount * 50) / 1920 <= MousePos.y < SCREEN_WIDTH * (ReserveSpace + (ReserveCount + 1) * 50) / 1920) {
+			std::cout << "end1" << std::endl;
+			return ReserveCount;
+		}
+		ReserveCount++;
+	}
+	if (ReserveCount == CheckListSize(ListNum) - 1) {
+		if (SCREEN_WIDTH * (ReserveSpace + ReserveCount * 50) / 1920 <= MousePos.y <= SCREEN_WIDTH * (ReserveSpace + 375 + ReserveCount * 50) / 1920) {
+			std::cout << "end2" << std::endl;
+			return ReserveCount;
+		}
+	}
+	else {
+		std::cout << "error end2" << std::endl;
+		return 111;
+	}
 }
