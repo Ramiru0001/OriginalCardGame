@@ -1,3 +1,4 @@
+#pragma warning( disable : 4789 )
 #include "BaseCard.h"
 #include "../Base/Base.h"
 #include <iostream>
@@ -1532,6 +1533,9 @@ void BaseCard::AutoMode() {
 			//std::cout << "ListNum" << ListNum << ":" << CheckListSize(ListNum) << ":" << EmptyOrNotTheList(ListNum) << std::endl;
 			CheckAddToFoundationList();
 			OpenListCheckAndAdd();
+			/*for (int a = 0; a <MiddleMovingCount ; a++) {
+				std::cout << MiddleMovingCheck<< MiddleMovingCount<<" " << a << " " << MiddleMovingList[a] << " " << MiddleMovingLane[a] << std::endl;
+			}*/
 			if (EmptyOrNotTheList(MovingLane)) {
 				break;
 			}
@@ -1564,6 +1568,12 @@ void BaseCard::AutoMode() {
 			if (EmptyOrNotTheList(MovingLane)) {
 				break;
 			}
+		}
+		//	Movinglaneを途中から他のレーンに移動可能か調べる
+		Middle_Judgement_CheckAddToReserveList();
+		//ここで、途中からレーン移動の処理。移動可能の場合のみ
+		if (MiddleMovingCheck) {
+			Middle_CheckAddToReserveList();
 		}
 	}
 	//ゲームクリアの場合もloop判定になっている。
@@ -1748,6 +1758,9 @@ void BaseCard::UserOperation() {
 		if (MouseOverReserveAndWasteLists == true) {
 			CheckAddToFoundationList();
 		}
+		if (MouseOverReserve == true) {
+			//Middle_Judgement_CheckAddToReserveList();
+		}
 	}
 	//もし、押したカードのリストが空白じゃない場合、途中のカードから移動できるならば、
 	// 途中から移動できるかどうかの処理をする関数が必要
@@ -1920,6 +1933,9 @@ void BaseCard::DebugMode() {
 			DebugMode_State = eState_Normal;
 		}
 	}
+	if (PUSH(CInput::eButton4)) {
+		ReStartGame(true);
+	}
 	switch (DebugMode_State) {
 	case eState_Normal:
 		NormalMode();
@@ -1929,10 +1945,22 @@ void BaseCard::DebugMode() {
 		break;
 	}
 }
-void BaseCard::Middle_CheckAddToReserveList() {
-	if (EmptyOrNotTheList(MovingLane)) {
+void BaseCard::Middle_Judgement_CheckAddToReserveList() {
+	//falseで初期化
+	MiddleMovingCheck = false;
+	//std::cout << "start" <<std::endl;
+	//動かせる数のカウント
+	int MovingCount = 0;
+	//MovingLaneを調べた数のカウント。N番目
+	int CheckCount = 0;
+	//MovingItrのカウント
+	int MovingItrCount = 0;
+	//動かせる数を初期化
+	MiddleMovingCount = 0;
+	if (EmptyOrNotTheList(MovingLane) || eNum_ReserveOpen0 > MovingLane || MovingLane > eNum_ReserveOpen6) {
 		return;
 	}
+	//std::cout << "return fin" << std::endl;
 	//途中から移動できるか調べる
 	//調べられたらMiddleMovingCheck=true;
 	auto MovingItr = Reserve_listOpen0.begin();
@@ -1960,20 +1988,87 @@ void BaseCard::Middle_CheckAddToReserveList() {
 		MovingItr = Reserve_listOpen6.begin();
 		break;
 	}
-	//すべてのreserveの最後のカードを調べる
-	int ListEndNum[8];
-	int SearchList;
-	ListEndNum[eNum_ReserveOpen0] = Reserve_listOpen0.back();
-	ListEndNum[eNum_ReserveOpen1] = Reserve_listOpen1.back();
-	ListEndNum[eNum_ReserveOpen2] = Reserve_listOpen2.back();
-	ListEndNum[eNum_ReserveOpen3] = Reserve_listOpen3.back();
-	ListEndNum[eNum_ReserveOpen4] = Reserve_listOpen4.back();
-	ListEndNum[eNum_ReserveOpen5] = Reserve_listOpen5.back();
-	ListEndNum[eNum_ReserveOpen6] = Reserve_listOpen6.back();
-	//movinglaneのカードを１枚ずつ移動可能か、各リスト確かめる
-
-	//SearchList = eNum_ReserveOpen0;
-	//if (MovingLane != ListEndNum[SearchList]) {
-		//MovingItrとListEndNum
-	//}
+	//std::cout << "MovingLane :" << MovingLane << std::endl;
+	//std::cout << "MovingListSize :" << CheckListSize(MovingLane) << std::endl;
+	//std::cout << "*MovingItr :" << *MovingItr << std::endl;
+	//std::cout << "Itrfin" << std::endl;
+	while (CheckListSize(MovingLane) > CheckCount) {
+		//std::cout << "loop start" << std::endl;
+		//すべてのreserveの最後のカードを調べる
+		int ListEndNum;
+		int SearchList;
+		//次のタスク：それぞれが空白じゃないかどうか調べ、空白だったら飛ばす
+		for (int i = eNum_ReserveOpen0; i <= eNum_ReserveOpen6; i++) {
+			//もし空白だったら飛ばす
+			if (EmptyOrNotTheList(i)) {
+				continue;
+			}
+			//std::cout << "ListEndNum指定start" << std::endl;
+			switch (i) {
+			case eNum_ReserveOpen0:
+				ListEndNum = Reserve_listOpen0.back();
+				break;
+			case eNum_ReserveOpen1:
+				ListEndNum = Reserve_listOpen1.back();
+				break;
+			case eNum_ReserveOpen2:
+				ListEndNum = Reserve_listOpen2.back();
+				break;
+			case eNum_ReserveOpen3:
+				ListEndNum = Reserve_listOpen3.back();
+				break;
+			case eNum_ReserveOpen4:
+				ListEndNum = Reserve_listOpen4.back();
+				break;
+			case eNum_ReserveOpen5:
+				ListEndNum = Reserve_listOpen5.back();
+				break;
+			case eNum_ReserveOpen6:
+				ListEndNum = Reserve_listOpen6.back();
+				break;
+			}
+			//std::cout << "ListEndNum指定fin" << std::endl;
+			//std::cout <<"MovingItr :" << *MovingItr << std::endl;
+			//movinglaneのカードを１枚ずつ移動可能か、各リスト確かめる
+			if ((ListEndNum + 12 == *MovingItr || ListEndNum + 38 == *MovingItr ||
+				ListEndNum - 14 == *MovingItr || ListEndNum - 40 == *MovingItr) &&
+				(ListEndNum != 0 && ListEndNum != 13 && ListEndNum != 26 && ListEndNum != 39)) {
+				MiddleMovingCheck = true;
+				MiddleMovingList[MovingCount] = i;
+				MiddleMovingLane[MovingCount] = MovingItrCount;
+				MovingCount++;
+				MiddleMovingCount = MovingCount;
+				break;
+				//return;
+				//std::cout << "処理fin" << std::endl;
+			}
+			//std::cout << "else" << std::endl;
+			//std::cout << "for fin" << std::endl;
+		}
+		//std::cout << "while fin" << std::endl;
+		MovingItr++;
+		MovingItrCount++;
+		CheckCount++; 
+		if (MovingItrCount >= CheckListSize(MovingLane)-1) {
+			return;
+		}
+		//std::cout << "MovingItrCount :" << MovingItrCount << std::endl;
+		//std::cout << "MovingListSize :" << CheckListSize(MovingLane) << std::endl;
+		//std::cout << "*MovingItr :" << *MovingItr << std::endl;
+		//std::cout << "Itr++fin" << std::endl;
+	}
+	//移動可能かどうか判定終了
+	//std::cout << "all fin" << std::endl;
+	//std::cout << "MiddleMovingCheck :" << MiddleMovingCheck << std::endl;
 };
+void BaseCard::Middle_CheckAddToReserveList() {
+	if (!MiddleMovingCheck || EmptyOrNotTheList(MovingLane)) {
+		return;
+	}
+	//マウスでクリックしている場所に応じて、変数に入れてる、移動可能場所に移動する
+	//※クリックしているカードのN番目の数字を入手する必要がある
+	//autoの場合は、手前から順に移動
+	//１，マウスでクリックしている場所を判定する関数or変数の生成
+	// 　マウスの座標と、N番目のカード座標を出して、それを
+	//２，その場所に応じて、リストを動かす処理を作る
+}

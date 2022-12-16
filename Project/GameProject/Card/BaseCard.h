@@ -62,8 +62,12 @@ public:
 	bool MouseOverStockList;
 	//途中から動かせる場合:true
 	bool MiddleMovingCheck;
+	//途中から動かせる場合、動かせる先のリストをいれる
+	int MiddleMovingList[10];
 	//途中から動かせる場合、ここにそのカードの場所（Itr）の数を入れる
-	int MiddleMovingNum;
+	int MiddleMovingLane[10];
+	//途中から動かせる数を数えて、代入
+	int MiddleMovingCount = 0;
 	///場札の空白 20
 	int Space = 20;
 	//場札openの空白 50
@@ -179,6 +183,10 @@ public:
 	void AllCardNumOutPut_debug();
 	//デバッグ用。オートと手動切替可能。
 	void DebugMode();
-	//途中からreserveリストへ移動できるかどうかの処理
+	//途中からreserveリストへ移動できるかどうかの判定（判定とリストの数字を入れるのみ）
+	void Middle_Judgement_CheckAddToReserveList();
+	//途中から動かせるかどうかの判定。
+	//可能な場合MiddleMovingCheck = true;
+	//現在作成中・・・
 	void Middle_CheckAddToReserveList();
 };

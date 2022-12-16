@@ -3,9 +3,9 @@
 #include "Base/Base.h"
 #include "SelectScene/SelectScene.h"
 #include "Card/BaseCard.h"
+#include "FreeNum.h"
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
-
 
 
 //--------------------------------------------

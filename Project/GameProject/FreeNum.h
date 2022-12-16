@@ -8,4 +8,6 @@ public:
 	static int HitCount;
 	static bool debug;
 	static bool Hit;
+	static int ScreenSizeX;
+	static int ScreenSizeY;
 };
