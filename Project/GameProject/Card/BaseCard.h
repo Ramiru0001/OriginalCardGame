@@ -54,6 +54,8 @@ public:
 	int LaneNum;
 	//今動いているカードのレーンを指定
 	int MovingLane;
+	//途中から動かせるレーンを指定
+	int MiddleMovingLaneNum;
 	//動かせるカードの上にマウスがあるかどうか
 	bool MouseOverCard;
 	//reserveリストの上にマウスがあるかどうか
@@ -78,6 +80,8 @@ public:
 	int SelectMode = 0;
 	//カードが今動いているかどうか
 	bool CardMoving;
+	//今、途中からカードが動いているか否か
+	bool MiddleCardMoving;
 	//debugモードのstate
 	int DebugMode_State;
 	//すべてのカードのリスト
@@ -193,4 +197,6 @@ public:
 	void Middle_CheckAddToReserveList();
 	//マウスの位置はリストのN番目
 	int MousePositionIsNthInTheList(int ListNum);
+	//途中から動かせるかどうかの判定と、どこから動かせるか。動かせる場合true
+	bool CheckIfItCanBeMovedFromTheMiddle();
 };

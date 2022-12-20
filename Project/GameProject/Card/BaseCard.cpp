@@ -1757,10 +1757,17 @@ void BaseCard::UserOperation() {
 		CardMoving = true;
 		//マウスが、wasteリストかreserveリストのうえにある場合
 		if (MouseOverReserveAndWasteLists == true) {
+			//↓実行できた場合、cardmoving=falseにしている
 			CheckAddToFoundationList();
 		}
-		if (MouseOverReserve == true) {
-			//Middle_Judgement_CheckAddToReserveList();
+		//reserveカードの上にマウスがあり、途中から動かせる場合。
+		if (CardMoving && MouseOverReserve && CheckIfItCanBeMovedFromTheMiddle()) {
+			//途中から動いているフラグをtrueにする
+			//↑MiddleMovingLaneNumに、どこから動かせるかが入っている
+			MiddleCardMoving = true;
+		}
+		else {
+			MiddleCardMoving = false;
 		}
 	}
 	//もし、押したカードのリストが空白じゃない場合、途中のカードから移動できるならば、
@@ -1768,17 +1775,30 @@ void BaseCard::UserOperation() {
 	//if(MovingLane)
 	// そのカードの場所変更と、途中から移動可能というフラグをONにする
 	//マウスを離したとき、マウスがreserveリストの上にある場合
-	if (PULL(CInput::eMouseL) && MouseOverReserve && CardMoving) {
-		//マウスの下のリストが空白でかつ、動かしてるカードのリストが空白じゃない場合
-		if (!EmptyOrNotTheList(MovingLane) && EmptyOrNotTheList(ListNum)) {
-			//動かしてるリストの一番最初のカードがKの場合、
-			//置ける
-			MoveIfK();
+	//途中から動いていない場合↓
+	switch (MiddleCardMoving) {
+	case true:
+		if (PULL(CInput::eMouseL) && MouseOverReserve && MiddleCardMoving) {
+			//離したときに、それが置ける場所かどうか判定して、移動できる場合移動。不可能な場合は戻る
+			//ListNumの場所が配置可能場所かどうかを判断。可能な場合移動。
 		}
-		//マウスの下のリストと動かしてるリストの両方が空白じゃない場合
-		else if (!EmptyOrNotTheList(MovingLane) || !EmptyOrNotTheList(ListNum)) {
-			CheckAddToReserveList();
+		break;
+		//途中から動いている場合
+	case false:
+		//途中から動いていない場合
+		if (PULL(CInput::eMouseL) && MouseOverReserve && CardMoving ) {
+			//マウスの下のリストが空白でかつ、動かしてるカードのリストが空白じゃない場合
+			if (!EmptyOrNotTheList(MovingLane) && EmptyOrNotTheList(ListNum)) {
+				//動かしてるリストの一番最初のカードがKの場合、
+				//置ける
+				MoveIfK();
+			}
+			//マウスの下のリストと動かしてるリストの両方が空白じゃない場合
+			else if (!EmptyOrNotTheList(MovingLane) || !EmptyOrNotTheList(ListNum)) {
+				CheckAddToReserveList();
+			}
 		}
+		break;
 	}
 	//もし、openのリストに何もなければ、１枚移動する。
 	OpenListCheckAndAdd();
@@ -2127,60 +2147,84 @@ void BaseCard::Middle_CheckAddToReserveList() {
 		//イテレータを、動かせる場所に配置
 		while (CheckListSize(eNum_ReserveOpen0) > MovingArea) {
 			movingItr = Reserve_listOpen1.begin();
+			std::cout << "Itr fin" << std::endl;
 			std::advance(movingItr, MovingArea);
+			std::cout << "adv fin" << std::endl;
 			AddToListend(MiddleMovingList[count], *movingItr);
+			std::cout << "adde fin" << std::endl;
 			int num = *movingItr;
 			Reserve_listOpen1.remove(num);
+			std::cout << "remove fin" << std::endl;
 		}
 		break;
 	case eNum_ReserveOpen2:
 		//イテレータを、動かせる場所に配置
 		while (CheckListSize(eNum_ReserveOpen0) > MovingArea) {
 			movingItr = Reserve_listOpen2.begin();
+			std::cout << "Itr fin" << std::endl;
 			std::advance(movingItr, MovingArea);
+			std::cout << "adv fin" << std::endl;
 			AddToListend(MiddleMovingList[count], *movingItr);
+			std::cout << "adde fin" << std::endl;
 			int num = *movingItr;
 			Reserve_listOpen2.remove(num);
+			std::cout << "remove fin" << std::endl;
 		}
 		break;
 	case eNum_ReserveOpen3:
 		//イテレータを、動かせる場所に配置
 		while (CheckListSize(eNum_ReserveOpen0) > MovingArea) {
 			movingItr = Reserve_listOpen3.begin();
+			std::cout << "Itr fin" << std::endl;
 			std::advance(movingItr, MovingArea);
+			std::cout << "adv fin" << std::endl;
 			AddToListend(MiddleMovingList[count], *movingItr);
+			std::cout << "adde fin" << std::endl;
 			int num = *movingItr;
 			Reserve_listOpen3.remove(num);
+			std::cout << "remove fin" << std::endl;
 		}
 		break;
 	case eNum_ReserveOpen4:
 		//イテレータを、動かせる場所に配置
 		while (CheckListSize(eNum_ReserveOpen0) > MovingArea) {
 			movingItr = Reserve_listOpen4.begin();
+			std::cout << "Itr fin" << std::endl;
 			std::advance(movingItr, MovingArea);
+			std::cout << "adv fin" << std::endl;
 			AddToListend(MiddleMovingList[count], *movingItr);
+			std::cout << "adde fin" << std::endl;
 			int num = *movingItr;
 			Reserve_listOpen4.remove(num);
+			std::cout << "remove fin" << std::endl;
 		}
 		break;
 	case eNum_ReserveOpen5:
 		//イテレータを、動かせる場所に配置
 		while (CheckListSize(eNum_ReserveOpen0) > MovingArea) {
 			movingItr = Reserve_listOpen5.begin();
+			std::cout << "Itr fin" << std::endl;
 			std::advance(movingItr, MovingArea);
+			std::cout << "adv fin" << std::endl;
 			AddToListend(MiddleMovingList[count], *movingItr);
+			std::cout << "adde fin" << std::endl;
 			int num = *movingItr;
 			Reserve_listOpen5.remove(num);
+			std::cout << "remove fin" << std::endl;
 		}
 		break;
 	case eNum_ReserveOpen6:
 		//イテレータを、動かせる場所に配置
 		while (CheckListSize(eNum_ReserveOpen0) > MovingArea) {
 			movingItr = Reserve_listOpen6.begin();
+			std::cout << "Itr fin" << std::endl;
 			std::advance(movingItr, MovingArea);
+			std::cout << "adv fin" << std::endl;
 			AddToListend(MiddleMovingList[count], *movingItr);
+			std::cout << "adde fin" << std::endl;
 			int num = *movingItr;
 			Reserve_listOpen6.remove(num);
+			std::cout << "remove fin" << std::endl;
 		}
 		break;
 	}
@@ -2218,4 +2262,33 @@ int BaseCard::MousePositionIsNthInTheList(int ListNum) {
 		std::cout << "error end2" << std::endl;
 		return 111;
 	}
+}
+bool BaseCard::CheckIfItCanBeMovedFromTheMiddle() {
+	Middle_Judgement_CheckAddToReserveList(MovingLane);
+	int MouseLane = MousePositionIsNthInTheList(MovingLane);
+	int count = 0;
+	bool MiddleMoving = false;
+	//そのNが動かせるカードより上にあるかどうかの判定
+	//動かせるのはどこからかの判定
+	while (count < MiddleMovingCount - 1) {
+		if (MiddleMovingLane[count] <= MouseLane < MiddleMovingLane[count + 1]) {
+			//動かせるっていうフラグを立てる、
+			MiddleMoving = true;
+			//MovingLaneから動かせる
+			MiddleMovingLaneNum = MiddleMovingLane[count];
+			return true;
+		}
+		else {
+			MiddleMoving = false;
+		}
+		count++;
+	}
+	if (MiddleMovingLane[count] <= MouseLane) {
+		//動かせるっていうフラグを立てる、
+		MiddleMoving = true;
+		//MovingLaneから動かせる
+		MiddleMovingLaneNum = MiddleMovingLane[count];
+		return true;
+	}
+	return false;
 }
