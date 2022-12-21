@@ -56,6 +56,8 @@ public:
 	int MovingLane;
 	//途中から動かせるレーンを指定
 	int MiddleMovingLaneNum;
+	//途中から動かせる先のリストを指定
+	int MiddleMovingListNum;
 	//動かせるカードの上にマウスがあるかどうか
 	bool MouseOverCard;
 	//reserveリストの上にマウスがあるかどうか
@@ -115,6 +117,7 @@ public:
 	std::list<int> Moved_Log;//ログ
 	std::list<int> Empty_list;//カード配置時、空白のリストを入れる
 	std::list<int> Empty_list4Types;//カード配置時、空白のリストを入れる。４種類の模様カード。
+	std::list<int> Temp_list;//temp。移動させるときに使う、仮のリスト
 	CImage heart[14];//ハートの赤
 	CImage diamond[14];//ダイヤの赤
 	CImage club[14];//クローバーの黒
