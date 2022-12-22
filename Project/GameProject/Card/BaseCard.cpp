@@ -14,6 +14,7 @@ std::default_random_engine eng(rnd());
 BaseCard::BaseCard(int GameMode):Base(eType_Card){
 	SelectMode = GameMode;
 	DebugMode_State = eState_Normal;
+	MiddleCardMoving = false;
 	ImageSet();
 	CardListSet();
 }
@@ -63,7 +64,16 @@ void BaseCard::Draw() {
 	//リストを読み込んで、そのリストの数字の画像を表示させる
 	//MouseOverCardがtrueならマウスのところにカードを指定
 	LoadTheListAndDraw();
-	MovingCardDraw();
+	if (!MiddleCardMoving) {
+		//途中から動いていない場合、今まで通りリスト全体移動
+		MovingCardDraw();
+	}
+	else {
+		//途中から動いている場合、
+		//１，残りのカードの表示
+		//２，動いているカードの表示
+		MiddleCardMovingDraw();
+	}
 }
 void BaseCard::CardListSet() {
 	switch (SelectMode) {
@@ -1765,10 +1775,12 @@ void BaseCard::UserOperation() {
 			//途中から動いているフラグをtrueにする
 			//↑MiddleMovingLaneNumに、どこから動かせるかが入っている
 			MiddleCardMoving = true;
+			std::cout << "MiddleCardMoving" << std::endl;
 		}
 		else {
 			MiddleCardMoving = false;
 		}
+		std::cout << "CheckIfItCanBeMovedFromTheMiddle() :" << CheckIfItCanBeMovedFromTheMiddle() << std::endl;
 	}
 	//もし、押したカードのリストが空白じゃない場合、途中のカードから移動できるならば、
 	// 途中から移動できるかどうかの処理をする関数が必要
@@ -1808,12 +1820,14 @@ void BaseCard::UserOperation() {
 	OpenListCheckAndAdd();
 	if (FREE(CInput::eMouseL)) {
 		CardMoving = false;
+		MiddleCardMoving = false;
 	}
 	//マウスが、stockリストのなかにあれば
 	//左キーを押したときに、ストックリストからwasteListに移動
 	if (PUSH(CInput::eLeft) || (MouseOverStockList && PUSH(CInput::eMouseL))) {
 		BothStockAndWaste();
 	}
+	AllCardNumOutPut_debug();
 }
 void BaseCard::AddEmptyList() {
 	Empty_list.clear();
@@ -1971,7 +1985,8 @@ void BaseCard::DebugMode() {
 	}
 }
 void BaseCard::Middle_Judgement_CheckAddToReserveList(int MovingLane) {
-	//falseで初期化
+	std::cout << "Middle_Judgement_CheckAddToReserveList() start" << std::endl;
+		//falseで初期化
 	MiddleMovingCheck = false;
 	//std::cout << "start" <<std::endl;
 	//動かせる数のカウント
@@ -2062,10 +2077,14 @@ void BaseCard::Middle_Judgement_CheckAddToReserveList(int MovingLane) {
 			if ((ListEndNum + 12 == *MovingItr || ListEndNum + 38 == *MovingItr ||
 				ListEndNum - 14 == *MovingItr || ListEndNum - 40 == *MovingItr) &&
 				(ListEndNum != 0 && ListEndNum != 13 && ListEndNum != 26 && ListEndNum != 39)) {
+				std::cout << "Middle_Judgement_CheckAddToReserveList() true " << std::endl;
 				MiddleMovingCheck = true;
+				std::cout << "MiddleMovingList[MovingCount] :" << i << std::endl;
 				MiddleMovingList[MovingCount] = i;
+				std::cout << "MiddleMovingLane[MovingCount] :" << MovingItrCount << std::endl;
 				MiddleMovingLane[MovingCount] = MovingItrCount;
 				MovingCount++;
+				std::cout << "MiddleMovingCount :" << MovingCount << std::endl;
 				MiddleMovingCount = MovingCount;
 				break;
 				//return;
@@ -2079,15 +2098,17 @@ void BaseCard::Middle_Judgement_CheckAddToReserveList(int MovingLane) {
 		MovingItrCount++;
 		CheckCount++; 
 		if (MovingItrCount >= CheckListSize(MovingLane)-1) {
+			std::cout << "Middle_Judgement_CheckAddToReserveList() fin0" << std::endl;
 			return;
 		}
+		std::cout << "Middle_Judgement_CheckAddToReserveList() end" << std::endl;
 		//std::cout << "MovingItrCount :" << MovingItrCount << std::endl;
 		//std::cout << "MovingListSize :" << CheckListSize(MovingLane) << std::endl;
 		//std::cout << "*MovingItr :" << *MovingItr << std::endl;
 		//std::cout << "Itr++fin" << std::endl;
 	}
 	//移動可能かどうか判定終了
-	//std::cout << "all fin" << std::endl;
+	std::cout << "Middle_Judgement_CheckAddToReserveList() all fin" << std::endl;
 	//std::cout << "MiddleMovingCheck :" << MiddleMovingCheck << std::endl;
 };
 void BaseCard::Middle_CheckAddToReserveList() {
@@ -2144,13 +2165,17 @@ void BaseCard::Middle_CheckAddToReserveList() {
 	}
 	//最後から順に、動かせるところまで、、、のループ
 	while (MiddleMovingLaneNum < CheckListSize(MovingLane)) {
+		std::cout << "Move now " <<std::endl;
 		//最初がendのため、まずitr移動
 		movingItr--;
+		std::cout << "itr--" <<std::endl;
 		//仮のリストに入れる
 		Temp_list.push_front(*movingItr);
 		//移動済みの値を削除
 		Reserve_listOpen0.pop_back();
+		std::cout << "move fin" << std::endl;
 	}
+	std::cout << "while fin" << std::endl;
 	//移動後、そのままListNumのリストに、リスト移動
 	switch (ListNum) {
 	case eNum_ReserveOpen0:
@@ -2194,29 +2219,35 @@ int BaseCard::MousePositionIsNthInTheList(int ListNum) {
 	}
 	ReserveSpace = CheckListSize(ListNum - 7) * 20;
 	while (ReserveCount < (CheckListSize(ListNum)) - 1) {
-		if (SCREEN_WIDTH * (ReserveSpace + ReserveCount * 50) / 1920 <= MousePos.y < SCREEN_WIDTH * (ReserveSpace + (ReserveCount + 1) * 50) / 1920) {
+		if (SCREEN_WIDTH * (ReserveSpace + ReserveCount * 50) / 1920 <= MousePos.y && MousePos.y < SCREEN_WIDTH * (ReserveSpace + (ReserveCount + 1) * 50) / 1920) {
+			std::cout << "MousePosition :" << ReserveCount << std::endl;
 			std::cout << "end1" << std::endl;
 			return ReserveCount;
 		}
 		ReserveCount++;
 	}
 	if (ReserveCount == CheckListSize(ListNum) - 1) {
-		if (SCREEN_WIDTH * (ReserveSpace + ReserveCount * 50) / 1920 <= MousePos.y <= SCREEN_WIDTH * (ReserveSpace + 375 + ReserveCount * 50) / 1920) {
+		if (SCREEN_WIDTH * (ReserveSpace + ReserveCount * 50) / 1920 <= MousePos.y && MousePos.y <= SCREEN_WIDTH * (ReserveSpace + 375 + ReserveCount * 50) / 1920) {
+			std::cout << "MousePosition :" << ReserveCount << std::endl;
 			std::cout << "end2" << std::endl;
 			return ReserveCount;
 		}
 	}
 	else {
+		std::cout << "MousePosition :" << 111 << std::endl;
 		std::cout << "error end2" << std::endl;
 		return 111;
 	}
+	std::cout << "MousePositionIsNthInTheList end" << std::endl;
 }
 bool BaseCard::CheckIfItCanBeMovedFromTheMiddle() {
+	std::cout << "CheckIfItCanBeMovedFromTheMiddle start" << std::endl;
 	Middle_Judgement_CheckAddToReserveList(MovingLane);
 	int MouseLane = MousePositionIsNthInTheList(MovingLane);
 	int count = 0;
 	bool MiddleMoving = false;
 	if (!MiddleMovingCheck) {
+		std::cout << "CheckIfItCanBeMovedFromTheMiddle fin0 false" << std::endl;
 		return false;
 	}
 	//そのNが動かせるカードより上に
@@ -2229,6 +2260,7 @@ bool BaseCard::CheckIfItCanBeMovedFromTheMiddle() {
 			//MovingLaneから動かせる
 			MiddleMovingLaneNum = MiddleMovingLane[count];
 			MiddleMovingListNum = MiddleMovingList[count];
+			std::cout << "CheckIfItCanBeMovedFromTheMiddle fin1 true" << std::endl;
 			return true;
 		}
 		else {
@@ -2242,7 +2274,88 @@ bool BaseCard::CheckIfItCanBeMovedFromTheMiddle() {
 		//MovingLaneから動かせる
 		MiddleMovingLaneNum = MiddleMovingLane[count];
 		MiddleMovingListNum = MiddleMovingList[count];
+		std::cout << "CheckIfItCanBeMovedFromTheMiddle fin2 true" << std::endl;
 		return true;
 	}
+	std::cout << "CheckIfItCanBeMovedFromTheMiddle fin3 false" << std::endl;
 	return false;
+}
+void BaseCard::MiddleCardMovingDraw() {
+	if (EmptyOrNotTheList(MovingLane)) {
+		return;
+	}
+	//MiddleMovingLaneNumから移動可能
+	//それより上をItrを使って画面に表示
+	//そこから下をマウスの座標に表示
+	auto Itr = Reserve_listOpen0.begin();
+	int LineNum = 0;//行ナンバー
+	int RowNum = 0;//列ナンバー
+	int ListCount = 0;//リストのN番目
+	int CardLen;//その列の長さ
+	int ListSize;//その列の空白の数
+	//動いていない方
+	ListCount = 0;
+	switch (MovingLane) {
+	case eNum_ReserveOpen0:
+		RowNum = 0;
+		LineNum += Reserve_list0.size();
+		Itr = Reserve_listOpen0.begin();
+		break;
+	case eNum_ReserveOpen1:
+		RowNum = 1;
+		LineNum += Reserve_list1.size();
+		Itr = Reserve_listOpen1.begin();
+		break;
+	case eNum_ReserveOpen2:
+		RowNum = 2;
+		LineNum += Reserve_list2.size();
+		Itr = Reserve_listOpen2.begin();
+		break;
+	case eNum_ReserveOpen3:
+		RowNum = 3;
+		LineNum += Reserve_list3.size();
+		Itr = Reserve_listOpen3.begin();
+		break;
+	case eNum_ReserveOpen4:
+		RowNum = 4;
+		LineNum += Reserve_list4.size();
+		Itr = Reserve_listOpen4.begin();
+		break;
+	case eNum_ReserveOpen5:
+		RowNum = 5;
+		LineNum += Reserve_list5.size();
+		Itr = Reserve_listOpen5.begin();
+		break;
+	case eNum_ReserveOpen6:
+		RowNum = 6;
+		LineNum += Reserve_list6.size();
+		Itr = Reserve_listOpen6.begin();
+		break;
+	}
+	//動いてない方
+	while (ListCount < MiddleMovingLaneNum) {
+		CardNumToImage(*Itr);
+		m_img.SetSize(SCREEN_WIDTH * 250 / 1920, SCREEN_HEIGHT * 375 / 1080);
+		m_img.SetPos(SCREEN_WIDTH * (25 + (250 + 20) * RowNum) / 1920, SCREEN_HEIGHT * (350 + (Reserve_list0.size() * Space) + OpenSpace * (LineNum - Reserve_list0.size())) / 1080);
+		m_img.Draw();
+		LineNum++;
+		ListCount++;
+		Itr++;
+	}
+	//動いている方
+	//Reserve_listOpen0:1番左
+	ListSize = CheckListSize(MovingLane) - MiddleMovingLaneNum - 1;
+	if (ListSize < 0) {
+		ListSize = 0;
+	}
+	CardLen = ListSize * OpenSpace + 375;
+	while (ListCount < CheckListSize(MovingLane)) {
+		CardNumToImage(*Itr);
+		m_img.SetSize(SCREEN_WIDTH * 250 / 1920, SCREEN_HEIGHT * 375 / 1080);
+		m_img.SetPos(MousePos.x - (SCREEN_WIDTH * 125 / 1920), MousePos.y - (SCREEN_WIDTH * (CardLen / 2 - LineNum * OpenSpace) / 1920));
+		m_img.Draw();
+		LineNum++;
+		ListCount++;
+		Itr++;
+	}
 }

@@ -140,6 +140,8 @@ public:
 	void LoadTheListAndDraw();
 	//動いているカードの表示
 	void MovingCardDraw();
+	//途中から動いているカードの表示
+	void MiddleCardMovingDraw();
 	//マウスが動かせるカードの上にあるかないか。
 	//ある場合,	MouseOverCard=trueにする、ListNumを更新する。
 	void InsideOrOutsideTheCard();
