@@ -4,21 +4,26 @@
 //カードを引いたときに呼ばれる
 class BaseCard :public Base{
 public:
-	enum {
+	enum CardDesign{
 		eNum_Heart,
 		eNum_Diamond,
 		eNum_Club,
 		eNum_Spade,
 	};
 	//現在のゲーム設定
-	enum {
+	enum GameMode{
 		eState_Normal,
 		eState_Random,
 		eState_Debug,
 		eState_Auto,
 	};
 	//リストナンバー
-	enum {
+	//カードの数字。
+	//0~12がハート
+	//13~25がクラブ
+	//26~38がダイヤ
+	//39~51がスペード
+	enum List{
 		eNum_stock,
 		eNum_Waste,
 		eNum_Reserve0,
@@ -40,14 +45,16 @@ public:
 		eNum_Foundation2,
 		eNum_Foundation3,
 	};
-	//カードの数字。
-	//0~12がハート
-	//13~25がクラブ
-	//26~38がダイヤ
-	//39~51がスペード
+	//現在の場面。ユーザーが操作する画面の移行に使われる
+	enum GameScene{
+	eScene_Play,//プレイ中
+	eScene_AutoStay,//AUTOボタン表示中
+	eScene_Auto,//自動
+	};
 	int CardNum[51];
-	//文字通り、ゲームのステート。
-	bool AutoStay = false;
+	//現在のゲーム画面。プレイ中、AUTOボタンが表示されている、等
+	//ユーザーが操作する画面の移行に使われる
+	int GameScene = eScene_Play;
 	//リストナンバー
 	//bool InsideOrOutsideTheCard();これを実行したら更新される
 	int ListNum;
@@ -59,6 +66,8 @@ public:
 	int MiddleMovingLaneNum;
 	//途中から動かせる先のリストを指定
 	int MiddleMovingListNum;
+	//すべてのカードが開かれたらtrue;
+	bool AllOpen = false;
 	//動かせるカードの上にマウスがあるかどうか
 	bool MouseOverCard;
 	//reserveリストの上にマウスがあるかどうか

@@ -16,6 +16,7 @@ BaseCard::BaseCard(int GameMode):Base(eType_Card){
 	SelectMode = GameMode;
 	DebugMode_State = eState_Normal;
 	MiddleCardMoving = false;
+	AllOpen = false;
 	ImageSet();
 	CardListSet();
 }
@@ -84,7 +85,7 @@ void BaseCard::Draw() {
 		//２，動いているカードの表示
 		MiddleCardMovingDraw();
 	}
-	if (AutoStay) {
+	if (GameScene ==eScene_AutoStay) {
 		AutoButton.Draw();
 	}
 }
@@ -1620,15 +1621,17 @@ void BaseCard::MoveIfK() {
 }
 void BaseCard::NormalMode() {
 	//すべてのreserveリストのカードが無くなったら、
+	//scene切り替えをし、オートボタンを表示させる
 	if (CheckReserveEmpty()) {
-		AutoStay = true;
+		GameScene = eScene_AutoStay;
 		/*SelectMode = eState_Auto;*/
 		//std::cout << "ModeChange" << std::endl;
 	}
-	if (AutoStay && PUSH(CInput::eMouseL) && 
+	//表示させたボタンを押したら、自動操作に切り替わる
+	if (GameScene == eScene_AutoStay && PUSH(CInput::eMouseL) &&
 		SCREEN_WIDTH * 670 / 1920 <= MousePos.x && SCREEN_WIDTH * 1250 / 1920 >= MousePos.x &&
 		SCREEN_HEIGHT * 750 / 1080 <= MousePos.y && SCREEN_HEIGHT * 980 / 1080 >= MousePos.y) {
-		AutoStay = false;
+		GameScene = eScene_Auto;
 		SelectMode = eState_Auto;
 	}
 	//std::cout << CheckReserveEmpty() ;
@@ -1636,7 +1639,7 @@ void BaseCard::NormalMode() {
 	//ある場合,	MouseOverCard=trueにする、ListNumを更新する。
 	InsideOrOutsideTheCard();
 	//ユーザー操作に対する処理
-	if (!AutoStay) {
+	if (GameScene == eScene_Play) {
 		UserOperation();
 	}
 }
@@ -1721,7 +1724,7 @@ void BaseCard::AutoMode() {
 	}
 	//ゲームクリアの場合もloop判定になっている。
 	//それを除いてリスタートの処理に変更
-	if (ClearOrNot() == false && !AutoStay) {
+	if (ClearOrNot() == false && !CheckReserveEmpty()) {
 		ReStartGame(LoopOrNot());
 	}
 	//もし、同じ作業を5回以上繰り返している場合、動いてない場合、最初からやり直す
