@@ -8,19 +8,25 @@
 SelectScene::SelectScene():Base(eType_Scene)
 ,title_text("C:\\Windows\\Fonts\\msgothic.ttc", 64 * SCREEN_WIDTH / 1280)
 ,select_title_text("C:\\Windows\\Fonts\\msgothic.ttc", 80 * SCREEN_WIDTH / 1280 ) {
+	ScreenDesign= COPY_RESOURCE("BackGroundDesign1", CImage); 
+	ScreenDesign.SetSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+	BackGround= COPY_RESOURCE("BackGround", CImage);
+	BackGround.SetSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 	FreeNum::GameNum = 0;
 }
 SelectScene::~SelectScene() {
 	//Base::KillAll();
 }
 void SelectScene::Draw() {
+	BackGround.Draw();
+	ScreenDesign.Draw();
 	//選択中のタイトルを大きく表示
 	for (int i = 0; i < FreeNum::MaxGame; i++) {
 		if (FreeNum::GameNum != i) {
-			title_text.Draw(274 * SCREEN_WIDTH / 1280 , (214 + i * 150) * SCREEN_HEIGHT / 720 , 0, 0, 0, game_title[i]);
+			title_text.Draw(274 * SCREEN_WIDTH / 1280 , (214 + i * 150) * SCREEN_HEIGHT / 720 , 1, 1, 1, game_title[i]);
 		}
 		else {
-			select_title_text.Draw(274 * SCREEN_WIDTH / 1280 , (214 + i * 150) * SCREEN_HEIGHT / 720 , 0, 0, 0, game_title[i]);
+			select_title_text.Draw(274 * SCREEN_WIDTH / 1280 , (214 + i * 150) * SCREEN_HEIGHT / 720 , 1, 1, 1, game_title[i]);
 		}
 	}
 }

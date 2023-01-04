@@ -12,6 +12,9 @@
       <Filter>SelectScene</Filter>
     </ClCompile>
     <ClCompile Include="FreeNum.cpp" />
+    <ClCompile Include="Title\Title.cpp">
+      <Filter>Title</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Base">
@@ -38,5 +41,8 @@
       <Filter>SelectScene</Filter>
     </ClInclude>
     <ClInclude Include="FreeNum.h" />
+    <ClInclude Include="Title\Title.h">
+      <Filter>Title</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -14,6 +14,8 @@ private:
 	char game_title[10][100] = {"NormalMode","RandomMode","DebugMode"};
 	CFont title_text;
 	CFont select_title_text;
+	CImage ScreenDesign;
+	CImage BackGround;
 public:
 	SelectScene();
 	~SelectScene();

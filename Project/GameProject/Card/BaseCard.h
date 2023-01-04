@@ -46,7 +46,8 @@ public:
 	//26~38がダイヤ
 	//39~51がスペード
 	int CardNum[51];
-
+	//文字通り、ゲームのステート。
+	bool AutoStay = false;
 	//リストナンバー
 	//bool InsideOrOutsideTheCard();これを実行したら更新される
 	int ListNum;
@@ -127,6 +128,9 @@ public:
 	CImage BehindCard;//トランプの背面の画像
 	CImage m_img;//選択中の画像。Temp
 	CVector2D MousePos;
+	CImage AutoButton;
+	CImage ScreenDesign;
+	CImage BackGround;
 public:
 	BaseCard(int GameMode);
 	~BaseCard();

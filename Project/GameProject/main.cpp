@@ -3,6 +3,7 @@
 #include "Base/Base.h"
 #include "SelectScene/SelectScene.h"
 #include "Card/BaseCard.h"
+#include "Title/Title.h"
 #include "FreeNum.h"
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
@@ -95,7 +96,12 @@ void Init(void)
 	//Base::Add(new Title());
 	ADD_RESOURCE("TrumpCard", CImage::CreateImage("Image/TrumpCard.png"));
 	ADD_RESOURCE("TrumpBehind", CImage::CreateImage("Image/TrumpCardBehind.png"));
-	Base::Add(new SelectScene());
+	ADD_RESOURCE("Auto", CImage::CreateImage("Image/AutoOnly.png"));
+	ADD_RESOURCE("BackGroundDesign", CImage::CreateImage("Image/PlayBackGround.png"));
+	ADD_RESOURCE("BackGroundDesign1", CImage::CreateImage("Image/design2.png"));
+	ADD_RESOURCE("BackGround", CImage::CreateImage("Image/BackGround.png"));
+	ADD_RESOURCE("Title", CImage::CreateImage("Image/Title.png"));
+	Base::Add(new Title());
 }
 void Release()
 {

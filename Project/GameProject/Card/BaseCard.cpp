@@ -12,6 +12,7 @@ std::random_device rnd;
 std::default_random_engine eng(rnd());
 //カードを引いたときに呼ばれる。
 BaseCard::BaseCard(int GameMode):Base(eType_Card){
+	glClearColor(0.26, 0.49, 0.29, 1.0);
 	SelectMode = GameMode;
 	DebugMode_State = eState_Normal;
 	MiddleCardMoving = false;
@@ -59,8 +60,17 @@ void BaseCard::ImageSet() {
 	BehindCard = COPY_RESOURCE("TrumpBehind", CImage);
 	BehindCard.SetRect(23, 23, 294, 429);
 	BehindCard.SetSize(SCREEN_WIDTH * 250 / 1920, SCREEN_HEIGHT * 375 / 1080);
+	AutoButton= COPY_RESOURCE("Auto", CImage);
+	AutoButton.SetSize(SCREEN_WIDTH * 580 / 1920, SCREEN_HEIGHT * 230 / 1080);
+	AutoButton.SetPos(SCREEN_WIDTH * 670 / 1920, SCREEN_HEIGHT * 750 / 1080);
+	ScreenDesign = COPY_RESOURCE("BackGroundDesign", CImage);
+	ScreenDesign.SetSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+	BackGround = COPY_RESOURCE("BackGround", CImage);
+	BackGround.SetSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 }
 void BaseCard::Draw() {
+	BackGround.Draw();
+	ScreenDesign.Draw();
 	//リストを読み込んで、そのリストの数字の画像を表示させる
 	//MouseOverCardがtrueならマウスのところにカードを指定
 	LoadTheListAndDraw();
@@ -73,6 +83,9 @@ void BaseCard::Draw() {
 		//１，残りのカードの表示
 		//２，動いているカードの表示
 		MiddleCardMovingDraw();
+	}
+	if (AutoStay) {
+		AutoButton.Draw();
 	}
 }
 void BaseCard::CardListSet() {
@@ -485,6 +498,17 @@ void BaseCard::LoadTheListAndDraw() {
 		m_img.SetPos(SCREEN_WIDTH * 1710 / 1920, SCREEN_HEIGHT * 0 / 1080);
 		m_img.Draw();
 	}
+	//Waste_list:２枚位以上の場合、常に下に、最後から２万めの画像を表示
+	if (1 < Waste_list.size()) {
+		Itr = Waste_list.end();
+		Itr--;
+		Itr--;
+		CardNumToImage(*Itr);
+		m_img.SetSize(SCREEN_WIDTH * 200 / 1920, SCREEN_HEIGHT * 300 / 1080);
+		m_img.SetPos(SCREEN_WIDTH * 1500 / 1920, SCREEN_HEIGHT * 0 / 1080);
+		m_img.Draw();
+		//std::cout << "Draw1" << std::endl;
+	}
 	//Waste_list:1枚でもあったら最後の画像を表示
 	if (0 < Waste_list.size()) {
 		Itr = Waste_list.end();
@@ -494,7 +518,58 @@ void BaseCard::LoadTheListAndDraw() {
 		if (MovingLane != eNum_Waste || ! CardMoving){
 			m_img.SetPos(SCREEN_WIDTH * 1500 / 1920, SCREEN_HEIGHT * 0 / 1080);
 			m_img.Draw();
+			//std::cout << "Draw2" << std::endl;
 		}
+	}
+	//Foundation_list0:２枚位以上の場合、常に下に、最後から２万めの画像を表示
+	if (1 < Foundation_list0.size()) {
+		Itr = Foundation_list0.end();
+		Itr--;
+		Itr--;
+		CardNumToImage(*Itr);
+		m_img.SetSize(SCREEN_WIDTH * 200 / 1920, SCREEN_HEIGHT * 300 / 1080);
+		m_img.SetPos(SCREEN_WIDTH * 0 / 1920, SCREEN_HEIGHT * 0 / 1080);
+		m_img.Draw();
+	}
+	//Foundation_list0:２枚位以上の場合、常に下に、最後から２万めの画像を表示
+	if (1 < Foundation_list0.size()) {
+		Itr = Foundation_list0.end();
+		Itr--;
+		Itr--;
+		CardNumToImage(*Itr);
+		m_img.SetSize(SCREEN_WIDTH * 200 / 1920, SCREEN_HEIGHT * 300 / 1080);
+		m_img.SetPos(SCREEN_WIDTH * 0 / 1920, SCREEN_HEIGHT * 0 / 1080);
+		m_img.Draw();
+	}
+	//Foundation_list1:２枚位以上の場合、常に下に、最後から２万めの画像を表示
+	if (1 < Foundation_list1.size()) {
+		Itr = Foundation_list1.end();
+		Itr--;
+		Itr--;
+		CardNumToImage(*Itr);
+		m_img.SetSize(SCREEN_WIDTH * 200 / 1920, SCREEN_HEIGHT * 300 / 1080);
+		m_img.SetPos(SCREEN_WIDTH * 210 / 1920, SCREEN_HEIGHT * 0 / 1080);
+		m_img.Draw();
+	}
+	//Foundation_list2:２枚位以上の場合、常に下に、最後から２万めの画像を表示
+	if (1 < Foundation_list2.size()) {
+		Itr = Foundation_list2.end();
+		Itr--;
+		Itr--;
+		CardNumToImage(*Itr);
+		m_img.SetSize(SCREEN_WIDTH * 200 / 1920, SCREEN_HEIGHT * 300 / 1080);
+		m_img.SetPos(SCREEN_WIDTH * 420 / 1920, SCREEN_HEIGHT * 0 / 1080);
+		m_img.Draw();
+	}
+	//Foundation_list3:２枚位以上の場合、常に下に、最後から２万めの画像を表示
+	if (1 < Foundation_list3.size()) {
+		Itr = Foundation_list3.end();
+		Itr--;
+		Itr--;
+		CardNumToImage(*Itr);
+		m_img.SetSize(SCREEN_WIDTH * 200 / 1920, SCREEN_HEIGHT * 300 / 1080);
+		m_img.SetPos(SCREEN_WIDTH * 630 / 1920, SCREEN_HEIGHT * 0 / 1080);
+		m_img.Draw();
 	}
 	//Foundation_list0
 	if (0 < Foundation_list0.size()) {
@@ -1100,6 +1175,8 @@ void BaseCard::CheckAddToReserveList(){
 		case eNum_ReserveOpen4:
 		case eNum_ReserveOpen5:
 		case eNum_ReserveOpen6:
+			//std::cout << "MovingLane :"<< MovingLane<< std::endl;
+			//std::cout << "ListNum :" << ListNum << std::endl;
 			// すべてのカードを移動させて、もとのリストを前消しする。
 			while (!EmptyOrNotTheList(MovingLane)) {
 				AddToListend(ListNum, *MovingCard_Itr);
@@ -1544,15 +1621,24 @@ void BaseCard::MoveIfK() {
 void BaseCard::NormalMode() {
 	//すべてのreserveリストのカードが無くなったら、
 	if (CheckReserveEmpty()) {
-		SelectMode = eState_Auto;
+		AutoStay = true;
+		/*SelectMode = eState_Auto;*/
 		//std::cout << "ModeChange" << std::endl;
+	}
+	if (AutoStay && PUSH(CInput::eMouseL) && 
+		SCREEN_WIDTH * 670 / 1920 <= MousePos.x && SCREEN_WIDTH * 1250 / 1920 >= MousePos.x &&
+		SCREEN_HEIGHT * 750 / 1080 <= MousePos.y && SCREEN_HEIGHT * 980 / 1080 >= MousePos.y) {
+		AutoStay = false;
+		SelectMode = eState_Auto;
 	}
 	//std::cout << CheckReserveEmpty() ;
 	//動かせるカードの上にマウスがあるかどうか
 	//ある場合,	MouseOverCard=trueにする、ListNumを更新する。
 	InsideOrOutsideTheCard();
 	//ユーザー操作に対する処理
-	UserOperation();
+	if (!AutoStay) {
+		UserOperation();
+	}
 }
 void BaseCard::RandomMode() {
 	//すべてのreserveリストのカードが無くなったら、
@@ -1635,7 +1721,7 @@ void BaseCard::AutoMode() {
 	}
 	//ゲームクリアの場合もloop判定になっている。
 	//それを除いてリスタートの処理に変更
-	if (ClearOrNot() == false) {
+	if (ClearOrNot() == false && !AutoStay) {
 		ReStartGame(LoopOrNot());
 	}
 	//もし、同じ作業を5回以上繰り返している場合、動いてない場合、最初からやり直す
@@ -2307,7 +2393,7 @@ bool BaseCard::CheckIfItCanBeMovedFromTheMiddle() {
 	//std::cout << "マウスの場所 :" << MouseLane << std::endl;
 	int count = 0;
 	bool MiddleMoving = false;
-	if (!MiddleMovingCheck || MouseLane==0) {
+	if (!MiddleMovingCheck || MouseLane==0 || MouseLane==111) {
 		//std::cout << "そもそも移動不可" << std::endl;
 		return false;
 	}
@@ -2322,8 +2408,8 @@ bool BaseCard::CheckIfItCanBeMovedFromTheMiddle() {
 			MiddleMovingLaneNum = MiddleMovingLane[count];
 			MiddleMovingListNum = MiddleMovingList[count];
 			//std::cout << "マウスの位置から考えて、動かせる場所を指定！" << std::endl;
-			//std::cout << "ここから動かせるよ　：" << MiddleMovingLaneNum << std::endl;
-			//std::cout << "動かせるリスト　：" << MiddleMovingLaneNum << std::endl;
+			std::cout << "ここから動かせるよ　：" << MiddleMovingLaneNum << std::endl;
+			std::cout << "動かせるリスト　：" << MiddleMovingListNum << std::endl;
 			return true;
 		}
 		else {
@@ -2338,8 +2424,8 @@ bool BaseCard::CheckIfItCanBeMovedFromTheMiddle() {
 		MiddleMovingLaneNum = MiddleMovingLane[count];
 		MiddleMovingListNum = MiddleMovingList[count];
 		//std::cout << "マウスの位置から考えて、動かせる場所を指定！（１番最後）" << std::endl;
-		//std::cout << "ここから動かせるよ　：" << MiddleMovingLaneNum << std::endl;
-		//std::cout << "動かせるリスト　：" << MiddleMovingLaneNum << std::endl;
+		std::cout << "ここから動かせるよ　：" << MiddleMovingLaneNum << std::endl;
+		std::cout << "動かせるリスト　：" << MiddleMovingListNum << std::endl;
 		return true;
 	}
 	//std::cout << "CheckIfItCanBeMovedFromTheMiddle  終了　範囲的に動かせないよ！" << std::endl;
