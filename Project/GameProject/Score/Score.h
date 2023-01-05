@@ -3,9 +3,9 @@
 
 class ScoreDraw :public Base {
 private:
-	CImage m_img[11];
 	int Score;
 	int Temp;
+	CImage m_img[11];
 public:
 	ScoreDraw();
 	void Update();
@@ -17,6 +17,7 @@ class Score {
 public:
 	static int score;
 	static int OpeCount;
+public:
 	static void ScoreOpeReset() {
 		score = 0;
 		OpeCount = 0;

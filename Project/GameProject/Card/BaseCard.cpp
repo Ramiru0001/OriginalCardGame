@@ -24,6 +24,7 @@ BaseCard::BaseCard(int GameMode):Base(eType_Card){
 	ClearCountDown = 30;
 }
 BaseCard::~BaseCard() {
+	Base::KillAll();
 }
 void BaseCard::Update() {
 	std::cout << Score::ScoreOutPut() << std::endl;
