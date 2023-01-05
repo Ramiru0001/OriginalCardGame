@@ -2,6 +2,7 @@
 #include "BaseCard.h"
 #include "../Base/Base.h"
 #include "../Score/Score.h"
+#include "../SelectScene/SelectScene.h"
 #include <iostream>
 #include <random>
 #include <Gllibrary.h>
@@ -12,7 +13,8 @@
 std::random_device rnd;
 std::default_random_engine eng(rnd());
 //カードを引いたときに呼ばれる。
-BaseCard::BaseCard(int GameMode):Base(eType_Card){
+BaseCard::BaseCard(int GameMode):Base(eType_Card)
+, PushEnter_Text("C:\\Windows\\Fonts\\msgothic.ttc", 50) {
 	glClearColor(0.26, 0.49, 0.29, 1.0);
 	SelectMode = GameMode;
 	DebugMode_State = eState_Normal;
@@ -25,9 +27,10 @@ BaseCard::BaseCard(int GameMode):Base(eType_Card){
 }
 BaseCard::~BaseCard() {
 	Base::KillAll();
+	Base::Add(new SelectScene());
 }
 void BaseCard::Update() {
-	std::cout << Score::ScoreOutPut() << std::endl;
+	//std::cout << Score::ScoreOutPut() << std::endl;
 	MousePos = CInput::GetMousePoint();
 	switch (GameScene) {
 	case eScene_Play:
@@ -66,8 +69,11 @@ void BaseCard::Update() {
 		break;
 	case eScene_Clear:
 		ClearCountDown--;
-		if (ClearCountDown < 0) {
+		if (ClearCountDown==0) {
 			Base::Add(new ScoreDraw());
+		}
+		if (ClearCountDown < 0 && PUSH(CInput::eButton10)) {
+			Base::SetKill();
 		}
 		break;
 	}
@@ -136,6 +142,7 @@ void BaseCard::Draw() {
 			Clear_Excellent.Draw();
 			Clear_Star.Draw();
 			Clear_Score.Draw();
+			PushEnter_Text.Draw(SCREEN_WIDTH * 1400 / 1920, SCREEN_HEIGHT * 1060 / 1080, 0.32f, 0.23f, 0.04f, "Push EnterKey");
 		}
 		break;
 	}
@@ -348,7 +355,7 @@ void BaseCard::CardListSet() {
 		}
 		break;
 	}
-	AllCardNumOutPut_debug();
+	//AllCardNumOutPut_debug();
 }
 void BaseCard::CardNumToImage(int ThatCardNumber) {
 	//呼ばれたら、その引数のカードをm_imgに指定

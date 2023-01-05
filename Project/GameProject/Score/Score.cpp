@@ -27,7 +27,7 @@ void ScoreDraw::Draw() {
 }
 void ScoreDraw::ImageSet() {
 	for (int i = 0; i < 10; i++) {
-		m_img[i] = COPY_RESOURCE("BNumber", CImage);
+		m_img[i] = COPY_RESOURCE("BrNumber", CImage);
 		m_img[i].SetRect(i*39, 0, (i+1) * 39, 77);
 		m_img[i].SetSize(SCREEN_WIDTH * 100 / 1920, SCREEN_HEIGHT * 190 / 1080);
 	}

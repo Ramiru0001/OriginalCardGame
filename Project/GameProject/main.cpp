@@ -107,6 +107,7 @@ void Init(void)
 	ADD_RESOURCE("Cloud", CImage::CreateImage("Image/Cloud.png"));
 	ADD_RESOURCE("Number", CImage::CreateImage("Image/Number.png"));
 	ADD_RESOURCE("BNumber", CImage::CreateImage("Image/BNumber.png"));
+	ADD_RESOURCE("BrNumber", CImage::CreateImage("Image/BrNumber.png"));
 	Base::Add(new Title());
 }
 void Release()

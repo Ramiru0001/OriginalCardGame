@@ -145,6 +145,7 @@ public:
 	CImage Clear_Star;
 	CImage Clear_Score;
 	CImage Clear_Cloud;
+	CFont PushEnter_Text;
 public:
 	BaseCard(int GameMode);
 	~BaseCard();
