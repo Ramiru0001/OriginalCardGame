@@ -15,6 +15,9 @@
     <ClCompile Include="Title\Title.cpp">
       <Filter>Title</Filter>
     </ClCompile>
+    <ClCompile Include="Score\Score.cpp">
+      <Filter>Score</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Base">
@@ -28,6 +31,9 @@
     </Filter>
     <Filter Include="SelectScene">
       <UniqueIdentifier>{56472de1-89b1-406a-9f54-91dbc80aec92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Score">
+      <UniqueIdentifier>{eb97429a-8607-4d12-9c91-504fab7df02b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -43,6 +49,9 @@
     <ClInclude Include="FreeNum.h" />
     <ClInclude Include="Title\Title.h">
       <Filter>Title</Filter>
+    </ClInclude>
+    <ClInclude Include="Score\Score.h">
+      <Filter>Score</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

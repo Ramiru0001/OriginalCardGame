@@ -50,6 +50,7 @@ public:
 	eScene_Play,//プレイ中
 	eScene_AutoStay,//AUTOボタン表示中
 	eScene_Auto,//自動
+	eScene_Clear,//クリア画面
 	};
 	int CardNum[51];
 	//現在のゲーム画面。プレイ中、AUTOボタンが表示されている、等
@@ -66,8 +67,6 @@ public:
 	int MiddleMovingLaneNum;
 	//途中から動かせる先のリストを指定
 	int MiddleMovingListNum;
-	//すべてのカードが開かれたらtrue;
-	bool AllOpen = false;
 	//動かせるカードの上にマウスがあるかどうか
 	bool MouseOverCard;
 	//reserveリストの上にマウスがあるかどうか
@@ -98,6 +97,8 @@ public:
 	int DebugMode_State;
 	//マウスとカードの上端の距離
 	int MouseDistance;
+	//クリア画面表示までのカウントダウン
+	int ClearCountDown;
 	//すべてのカードのリスト
 	std::list<int> AllCard_list = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51 };
 	std::list<int> HeartCard_list = { 0,1,2,3,4,5,6,7,8,9,10,11,12 };//ハートカードリスト
@@ -140,6 +141,10 @@ public:
 	CImage AutoButton;
 	CImage ScreenDesign;
 	CImage BackGround;
+	CImage Clear_Excellent;
+	CImage Clear_Star;
+	CImage Clear_Score;
+	CImage Clear_Cloud;
 public:
 	BaseCard(int GameMode);
 	~BaseCard();

@@ -101,6 +101,12 @@ void Init(void)
 	ADD_RESOURCE("BackGroundDesign1", CImage::CreateImage("Image/design2.png"));
 	ADD_RESOURCE("BackGround", CImage::CreateImage("Image/BackGround.png"));
 	ADD_RESOURCE("Title", CImage::CreateImage("Image/Title.png"));
+	ADD_RESOURCE("Excellent", CImage::CreateImage("Image/Excellent.png"));
+	ADD_RESOURCE("Star", CImage::CreateImage("Image/star.png"));
+	ADD_RESOURCE("Score", CImage::CreateImage("Image/score.png"));
+	ADD_RESOURCE("Cloud", CImage::CreateImage("Image/Cloud.png"));
+	ADD_RESOURCE("Number", CImage::CreateImage("Image/Number.png"));
+	ADD_RESOURCE("BNumber", CImage::CreateImage("Image/BNumber.png"));
 	Base::Add(new Title());
 }
 void Release()

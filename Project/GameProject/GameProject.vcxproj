@@ -15,6 +15,7 @@
     <ClCompile Include="Card\BaseCard.cpp" />
     <ClCompile Include="FreeNum.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Score\Score.cpp" />
     <ClCompile Include="SelectScene\SelectScene.cpp" />
     <ClCompile Include="Title\Title.cpp" />
   </ItemGroup>
@@ -22,6 +23,7 @@
     <ClInclude Include="Base\Base.h" />
     <ClInclude Include="Card\BaseCard.h" />
     <ClInclude Include="FreeNum.h" />
+    <ClInclude Include="Score\Score.h" />
     <ClInclude Include="SelectScene\SelectScene.h" />
     <ClInclude Include="Title\Title.h" />
   </ItemGroup>

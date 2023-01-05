@@ -1,6 +1,7 @@
 #pragma warning( disable : 4789 )
 #include "BaseCard.h"
 #include "../Base/Base.h"
+#include "../Score/Score.h"
 #include <iostream>
 #include <random>
 #include <Gllibrary.h>
@@ -15,27 +16,58 @@ BaseCard::BaseCard(int GameMode):Base(eType_Card){
 	glClearColor(0.26, 0.49, 0.29, 1.0);
 	SelectMode = GameMode;
 	DebugMode_State = eState_Normal;
+	GameScene = eScene_Play;
 	MiddleCardMoving = false;
-	AllOpen = false;
 	ImageSet();
 	CardListSet();
+	Score::ScoreOpeReset();
+	ClearCountDown = 30;
 }
 BaseCard::~BaseCard() {
 }
 void BaseCard::Update() {
+	std::cout << Score::ScoreOutPut() << std::endl;
 	MousePos = CInput::GetMousePoint();
-	switch (SelectMode) {
-	case eState_Normal:
-		NormalMode();
+	switch (GameScene) {
+	case eScene_Play:
+		if (CheckReserveEmpty()) {
+		GameScene = eScene_AutoStay;
+		}
+		switch (SelectMode) {
+		case eState_Normal:
+			NormalMode();
+			break;
+		case eState_Random:
+			RandomMode();
+			break;
+		case eState_Debug:
+			DebugMode();
+			break;
+		case eState_Auto:
+			AutoMode();
+			break;
+		}
 		break;
-	case eState_Random:
-		RandomMode();
+	case eScene_AutoStay:
+		//表示させたボタンを押したら、自動操作に切り替わる
+		if (GameScene == eScene_AutoStay && PUSH(CInput::eMouseL) &&
+			SCREEN_WIDTH * 670 / 1920 <= MousePos.x && SCREEN_WIDTH * 1250 / 1920 >= MousePos.x &&
+			SCREEN_HEIGHT * 750 / 1080 <= MousePos.y && SCREEN_HEIGHT * 980 / 1080 >= MousePos.y) {
+			GameScene = eScene_Auto;
+			SelectMode = eState_Auto;
+		}
 		break;
-	case eState_Debug:
-		DebugMode();
-		break;
-	case eState_Auto:
+	case eScene_Auto:
+		if (ClearOrNot() == true) {
+			GameScene = eScene_Clear;
+		}
 		AutoMode();
+		break;
+	case eScene_Clear:
+		ClearCountDown--;
+		if (ClearCountDown < 0) {
+			Base::Add(new ScoreDraw());
+		}
 		break;
 	}
 }
@@ -68,6 +100,14 @@ void BaseCard::ImageSet() {
 	ScreenDesign.SetSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 	BackGround = COPY_RESOURCE("BackGround", CImage);
 	BackGround.SetSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+	Clear_Excellent = COPY_RESOURCE("Excellent", CImage);
+	Clear_Excellent.SetSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+	Clear_Star = COPY_RESOURCE("Star", CImage);
+	Clear_Star.SetSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+	Clear_Score = COPY_RESOURCE("Score", CImage);
+	Clear_Score.SetSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+	Clear_Cloud = COPY_RESOURCE("Cloud", CImage);
+	Clear_Cloud.SetSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 }
 void BaseCard::Draw() {
 	BackGround.Draw();
@@ -85,8 +125,18 @@ void BaseCard::Draw() {
 		//２，動いているカードの表示
 		MiddleCardMovingDraw();
 	}
-	if (GameScene ==eScene_AutoStay) {
+	switch (GameScene) {
+	case eScene_AutoStay:
 		AutoButton.Draw();
+		break;
+	case eScene_Clear:
+		if (ClearCountDown < 0) {
+			Clear_Cloud.Draw();
+			Clear_Excellent.Draw();
+			Clear_Star.Draw();
+			Clear_Score.Draw();
+		}
+		break;
 	}
 }
 void BaseCard::CardListSet() {
@@ -1191,6 +1241,7 @@ void BaseCard::CheckAddToReserveList(){
 					break;
 				}
 			}
+			Score::OpeCountUp();
 			break;
 		case eNum_Waste:
 		case eNum_Foundation0:
@@ -1205,6 +1256,7 @@ void BaseCard::CheckAddToReserveList(){
 			RemoveFromListend(MovingLane);
 			//std::cout << "DeleteendFin";
 			//１枚の場合の処理しか書いてないため、複数枚動かすとまともに動かない
+			Score::OpeCountUp();
 			break;
 		}
 	}
@@ -1266,21 +1318,25 @@ void BaseCard::CheckAddToFoundationList() {
 			AddToMoved_Log(MovingLane, *MovingCard_Itr, eNum_Foundation0, 0);
 			Foundation_list0.push_front(*MovingCard_Itr);
 			CardMoving = false;
+			Score::OpeCountUp();
 		}
 		else if (*MovingCard_Itr == 13) {
 			AddToMoved_Log(MovingLane, *MovingCard_Itr, eNum_Foundation1, 0);
 			Foundation_list1.push_front(*MovingCard_Itr);
 			CardMoving = false;
+			Score::OpeCountUp();
 		}
 		else if (*MovingCard_Itr == 26) {
 			AddToMoved_Log(MovingLane, *MovingCard_Itr, eNum_Foundation2, 0);
 			Foundation_list2.push_front(*MovingCard_Itr);
 			CardMoving = false;
+			Score::OpeCountUp();
 		}
 		else if (*MovingCard_Itr == 39) {
 			AddToMoved_Log(MovingLane, *MovingCard_Itr, eNum_Foundation3, 0);
 			Foundation_list3.push_front(*MovingCard_Itr);
 			CardMoving = false;
+			Score::OpeCountUp();
 		}
 		RemoveFromListend(MovingLane);
 		return;
@@ -1297,6 +1353,7 @@ void BaseCard::CheckAddToFoundationList() {
 				Foundation_list0.push_back(*MovingCard_Itr);
 				RemoveFromListend(MovingLane);
 				CardMoving = false;
+				Score::OpeCountUp();
 			}
 		}
 		else if (14 <= *MovingCard_Itr && *MovingCard_Itr <= 25 && !Foundation_list1.empty()) {
@@ -1307,6 +1364,7 @@ void BaseCard::CheckAddToFoundationList() {
 				Foundation_list1.push_back(*MovingCard_Itr);
 				RemoveFromListend(MovingLane);
 				CardMoving = false;
+				Score::OpeCountUp();
 			}
 		}
 		else if (27 <= *MovingCard_Itr && *MovingCard_Itr <= 38 && !Foundation_list2.empty()) {
@@ -1317,6 +1375,7 @@ void BaseCard::CheckAddToFoundationList() {
 				Foundation_list2.push_back(*MovingCard_Itr);
 				RemoveFromListend(MovingLane);
 				CardMoving = false;
+				Score::OpeCountUp();
 			}
 		}
 		else if (40 <= *MovingCard_Itr && *MovingCard_Itr <= 51 && !Foundation_list3.empty()) {
@@ -1327,6 +1386,7 @@ void BaseCard::CheckAddToFoundationList() {
 				Foundation_list3.push_back(*MovingCard_Itr);
 				RemoveFromListend(MovingLane);
 				CardMoving = false;
+				Score::OpeCountUp();
 			}
 		}
 	}
@@ -1607,6 +1667,7 @@ void BaseCard::MoveIfK() {
 					break;
 				}
 			}
+			Score::OpeCountUp();
 			break;
 		case eNum_Waste:
 			//foundationリストから動かす場合。
@@ -1615,6 +1676,7 @@ void BaseCard::MoveIfK() {
 			//動いてるカードのリストを削除
 			RemoveFromListend(MovingLane);
 			//１枚の場合の処理しか書いてないため、複数枚動かすとまともに動かない
+			Score::OpeCountUp();
 			break;
 		}
 	}
@@ -1622,26 +1684,19 @@ void BaseCard::MoveIfK() {
 void BaseCard::NormalMode() {
 	//すべてのreserveリストのカードが無くなったら、
 	//scene切り替えをし、オートボタンを表示させる
-	if (CheckReserveEmpty()) {
-		GameScene = eScene_AutoStay;
-		/*SelectMode = eState_Auto;*/
-		//std::cout << "ModeChange" << std::endl;
-	}
-	//表示させたボタンを押したら、自動操作に切り替わる
-	if (GameScene == eScene_AutoStay && PUSH(CInput::eMouseL) &&
-		SCREEN_WIDTH * 670 / 1920 <= MousePos.x && SCREEN_WIDTH * 1250 / 1920 >= MousePos.x &&
-		SCREEN_HEIGHT * 750 / 1080 <= MousePos.y && SCREEN_HEIGHT * 980 / 1080 >= MousePos.y) {
-		GameScene = eScene_Auto;
-		SelectMode = eState_Auto;
-	}
+	//if (CheckReserveEmpty()) {
+	//	GameScene = eScene_AutoStay;
+	//	/*SelectMode = eState_Auto;*/
+	//	//std::cout << "ModeChange" << std::endl;
+	//}
 	//std::cout << CheckReserveEmpty() ;
 	//動かせるカードの上にマウスがあるかどうか
 	//ある場合,	MouseOverCard=trueにする、ListNumを更新する。
 	InsideOrOutsideTheCard();
 	//ユーザー操作に対する処理
-	if (GameScene == eScene_Play) {
-		UserOperation();
-	}
+	//if (GameScene == eScene_Play) {
+	UserOperation();
+	//}
 }
 void BaseCard::RandomMode() {
 	//すべてのreserveリストのカードが無くなったら、
@@ -1729,6 +1784,10 @@ void BaseCard::AutoMode() {
 	}
 	//もし、同じ作業を5回以上繰り返している場合、動いてない場合、最初からやり直す
 	//動かしたカード：動かした先の列名を見ての処理？
+	//もしクリアになったら、
+	/*if (ClearOrNot() == true) {
+		GameScene = eScene_Clear;
+	}*/
 }
 bool BaseCard::CheckReserveEmpty() {
 	if (EmptyOrNotTheList(eNum_Reserve0) &&
@@ -2350,6 +2409,7 @@ void BaseCard::Middle_CheckAddToReserveList() {
 	}
 	//std::cout << "正規のリストに移動完了" << std::endl;
 	MiddleCardMoving = false;
+	Score::OpeCountUp();
 	//std::cout << "Middle_CheckAddToReserveList badend" << std::endl;
 }
 int BaseCard::MousePositionIsNthInTheList(int ListNum) {

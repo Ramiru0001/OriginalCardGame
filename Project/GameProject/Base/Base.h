@@ -1,10 +1,9 @@
 #pragma once
 #include <GLLibrary.h>
 enum {
-	eType_Scene,
-	eType_Game,
-	eType_Play,
 	eType_Card,
+	eType_Score,
+	eType_Scene,
 };
 
 //d—Í‰Á‘¬“x
