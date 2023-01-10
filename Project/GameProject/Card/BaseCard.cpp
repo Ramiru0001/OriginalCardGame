@@ -1708,9 +1708,9 @@ void BaseCard::NormalMode() {
 }
 void BaseCard::RandomMode() {
 	//すべてのreserveリストのカードが無くなったら、
-	if (CheckReserveEmpty()) {
+	/*if (CheckReserveEmpty()) {
 		SelectMode = eState_Auto;
-	}
+	}*/
 	//動かせるカードの上にマウスがあるかどうか
 	//ある場合,	MouseOverCard=trueにする、ListNumを更新する。
 	InsideOrOutsideTheCard();
