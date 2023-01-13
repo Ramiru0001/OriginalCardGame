@@ -1,8 +1,8 @@
 #include "Score.h"
 #include "../Base/Base.h"
 #include <iostream>
-#define SCREEN_WIDTH 1280
-#define SCREEN_HEIGHT 720
+#define SCREEN_WIDTH 1920
+#define SCREEN_HEIGHT 1080
 //#include "ScoreTemp.h"
 ScoreDraw::ScoreDraw() :Base(eType_Score) {
 	Score::ScoreAdd();

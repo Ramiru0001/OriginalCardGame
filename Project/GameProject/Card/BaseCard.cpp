@@ -8,8 +8,8 @@
 #include <Gllibrary.h>
 #include <algorithm>
 #include <vector>
-#define SCREEN_WIDTH 1280
-#define SCREEN_HEIGHT 720
+#define SCREEN_WIDTH 1920
+#define SCREEN_HEIGHT 1080
 std::random_device rnd;
 std::default_random_engine eng(rnd());
 //カードを引いたときに呼ばれる。
@@ -2479,8 +2479,8 @@ bool BaseCard::CheckIfItCanBeMovedFromTheMiddle() {
 			MiddleMovingLaneNum = MiddleMovingLane[count];
 			MiddleMovingListNum = MiddleMovingList[count];
 			//std::cout << "マウスの位置から考えて、動かせる場所を指定！" << std::endl;
-			std::cout << "ここから動かせるよ　：" << MiddleMovingLaneNum << std::endl;
-			std::cout << "動かせるリスト　：" << MiddleMovingListNum << std::endl;
+			//std::cout << "ここから動かせるよ　：" << MiddleMovingLaneNum << std::endl;
+			//std::cout << "動かせるリスト　：" << MiddleMovingListNum << std::endl;
 			return true;
 		}
 		else {
@@ -2495,8 +2495,8 @@ bool BaseCard::CheckIfItCanBeMovedFromTheMiddle() {
 		MiddleMovingLaneNum = MiddleMovingLane[count];
 		MiddleMovingListNum = MiddleMovingList[count];
 		//std::cout << "マウスの位置から考えて、動かせる場所を指定！（１番最後）" << std::endl;
-		std::cout << "ここから動かせるよ　：" << MiddleMovingLaneNum << std::endl;
-		std::cout << "動かせるリスト　：" << MiddleMovingListNum << std::endl;
+		//std::cout << "ここから動かせるよ　：" << MiddleMovingLaneNum << std::endl;
+		//std::cout << "動かせるリスト　：" << MiddleMovingListNum << std::endl;
 		return true;
 	}
 	//std::cout << "CheckIfItCanBeMovedFromTheMiddle  終了　範囲的に動かせないよ！" << std::endl;

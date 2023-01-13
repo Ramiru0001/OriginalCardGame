@@ -2,8 +2,8 @@
 #include "../FreeNum.h"
 #include "../Card/BaseCard.h"
 #include <iostream>
-#define SCREEN_WIDTH 1280
-#define SCREEN_HEIGHT 720
+#define SCREEN_WIDTH 1920
+#define SCREEN_HEIGHT 1080
 
 SelectScene::SelectScene():Base(eType_Scene)
 ,title_text("C:\\Windows\\Fonts\\msgothic.ttc", 64 * SCREEN_WIDTH / 1280)
